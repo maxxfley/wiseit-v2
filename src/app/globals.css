@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+/*
+ * Tokens semánticos de Wiseit (fuente: DESIGN.md · "Coastal Studio").
+ * Los componentes NUNCA usan hex directos: consumen estas variables vía las
+ * utilidades de Tailwind mapeadas en @theme (bg-surface, text-foreground...).
+ * Tema: sigue prefers-color-scheme y puede forzarse con <html data-theme="light|dark">.
+ */
+:root {
+  color-scheme: light;
+  --background: #e6ded4; /* Driftwood Pale */
+  --surface: #c8d9e6; /* Seafoam Cloud */
+  --text-primary: #111827; /* Preto suave */
+  --text-secondary: #263c59; /* Deep Current */
+  --primary: #263c59; /* Deep Current */
+  --primary-foreground: #c8d9e6; /* Seafoam Cloud */
+  --accent: #6d89a6; /* Coastal Slate */
+  --border: #afc3d4; /* Ocean Pearl */
+  --ring: #263c59;
+  --danger: #b42318;
+
+  /* z-index contract (DESIGN.md › Layout) */
+  --z-base: 0;
+  --z-nav: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  --z-toast: 500;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --background: #111827;
+    --surface: #263c59;
+    --text-primary: #e6ded4;
+    --text-secondary: #c8d9e6;
+    --primary: #e6ded4;
+    --primary-foreground: #263c59;
+    --accent: #afc3d4;
+    --border: #6d89a6;
+    --ring: #afc3d4;
+    --danger: #f97066;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #111827;
+  --surface: #263c59;
+  --text-primary: #e6ded4;
+  --text-secondary: #c8d9e6;
+  --primary: #e6ded4;
+  --primary-foreground: #263c59;
+  --accent: #afc3d4;
+  --border: #6d89a6;
+  --ring: #afc3d4;
+  --danger: #f97066;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--text-primary);
+  --color-muted-foreground: var(--text-secondary);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-danger: var(--danger);
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+@theme {
+  --radius-sm: 20px;
+  --radius-md: 40px;
+  --radius-lg: 60px;
+
+  --text-hero: clamp(2.5rem, 5vw, 4rem);
+  --text-hero--line-height: 1.1;
+
+  --spacing-section: clamp(4rem, 8vw, 8rem);
+  --container-page: 1280px;
+
+  --shadow-card: 0 2px 12px rgb(17 24 39 / 0.06);
+  --shadow-lift: 0 6px 20px rgb(17 24 39 / 0.12);
+
+  --animate-fade-up: fade-up 420ms ease-out both;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
