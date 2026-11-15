@@ -22,8 +22,8 @@ const STEPS: readonly Step[] = [
 /** Timeline vertical con riel lateral (DESIGN.md › Grid & Container). */
 export function HowItWorks() {
   return (
-    <section className="mx-auto w-full max-w-page px-6 py-section">
-      <h2 className="max-w-[20ch] font-serif text-4xl font-medium tracking-[-0.8px] text-foreground">
+    <section data-snap-section className="mx-auto w-full max-w-page px-6 py-section">
+      <h2 className="max-w-[20ch] font-display text-4xl font-medium tracking-[-0.8px] text-foreground">
         De una idea a un plan de estudio
       </h2>
       <ol className="mt-12 max-w-2xl space-y-10 border-l border-border-strong pl-8">

@@ -18,7 +18,7 @@ export default function ErrorPage({ error, retry }: ErrorPageProps) {
 
   return (
     <main className="mx-auto flex w-full max-w-page flex-1 flex-col items-start justify-center gap-6 px-6 py-section">
-      <h1 className="font-serif text-4xl font-medium tracking-[-0.8px] text-foreground">Algo salió mal</h1>
+      <h1 className="font-display text-4xl font-medium tracking-[-0.8px] text-foreground">Algo salió mal</h1>
       <p className="max-w-[72ch] text-lg text-muted-foreground">
         Ocurrió un error inesperado. Podés intentar de nuevo; si persiste, volvé más tarde.
       </p>
