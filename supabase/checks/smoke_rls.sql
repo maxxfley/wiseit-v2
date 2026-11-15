@@ -86,10 +86,17 @@ begin
   -- 7. RPC atómico: guarda roadmap + nodos; con nodos inválidos no deja nada a medias.
   perform set_config('request.jwt.claims', json_build_object('sub', user_a, 'role', 'authenticated')::text, true);
   rid := public.create_roadmap_with_nodes('Rust', 'Ruta Rust',
-    '[{"title":"a","description":"d","difficulty":"Básico","order_index":0},
+    '[{"title":"a","description":"d","difficulty":"Básico","order_index":0,
+       "metadata":{"key_concepts":["x","y","z"],"practice":"hacé algo"}},
       {"title":"b","description":"d","difficulty":"Avanzado","order_index":1}]'::jsonb);
   select count(*) into n from public.nodes where roadmap_id = rid;
   if n <> 2 then raise exception 'FALLO RPC: % nodos (esperado 2)', n; end if;
+  select count(*) into n from public.nodes
+    where roadmap_id = rid and order_index = 0 and metadata->>'practice' = 'hacé algo'
+      and jsonb_array_length(metadata->'key_concepts') = 3;
+  if n <> 1 then raise exception 'FALLO RPC: la metadata del nodo no se guardó'; end if;
+  select count(*) into n from public.nodes where roadmap_id = rid and order_index = 1 and metadata = '{}'::jsonb;
+  if n <> 1 then raise exception 'FALLO RPC: un nodo sin metadata debe quedar en {}'; end if;
 
   begin
     perform public.create_roadmap_with_nodes('Go', 'Ruta Go',
