@@ -18,7 +18,8 @@ export function ConceptChecklist({ concepts, completed, disabled, onToggle }: Co
       {concepts.map((concept, index) => {
         const done = completed.includes(index);
         return (
-          <li key={concept}>
+          // Índice como key: la IA puede repetir un concepto y el índice es lo que se guarda en la base.
+          <li key={index}>
             <label
               className={cn(
                 "flex cursor-pointer items-center gap-3 rounded-md border border-transparent px-2.5 py-2 text-sm transition-colors",
