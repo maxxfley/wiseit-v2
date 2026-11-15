@@ -3,11 +3,11 @@ import { cn } from "@/utils/cn";
 
 export type CardProps = HTMLAttributes<HTMLDivElement>;
 
-/** Contenedor base: radio 20px, borde 1px y sombra suave (DESIGN.md › Cards). */
+/** Contenedor base: radio 12px, hairline translúcido y sin sombra (DESIGN.md › Elevation nivel 1). */
 export function Card({ className, ...props }: CardProps) {
   return (
     <div
-      className={cn("rounded-sm border border-border bg-surface p-6 shadow-card", className)}
+      className={cn("rounded-xl border border-border bg-surface p-6", className)}
       {...props}
     />
   );
