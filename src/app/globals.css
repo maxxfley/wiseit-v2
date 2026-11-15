@@ -107,7 +107,29 @@ body {
   line-height: 1.65;
 }
 
+/*
+ * Scroll suave con "imán" semiautomático: al soltar la rueda cerca de una sección, el
+ * navegador la alinea solo (proximity, no obliga). Se activa únicamente en páginas que
+ * marcan secciones con data-snap-section (la landing). Con movimiento reducido se desactiva.
+ */
+html {
+  scroll-behavior: smooth;
+}
+
+html:has([data-snap-section]) {
+  scroll-snap-type: y proximity;
+}
+
+[data-snap-section] {
+  scroll-snap-align: start;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+    scroll-snap-type: none !important;
+  }
+
   *,
   *::before,
   *::after {
