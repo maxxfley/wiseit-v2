@@ -16,11 +16,12 @@ export async function saveRoadmap(
   const { data, error } = await supabase.rpc("create_roadmap_with_nodes", {
     p_topic: topic,
     p_title: title,
-    p_nodes: nodes.map(({ title: nodeTitle, description, difficulty, order_index }) => ({
-      title: nodeTitle,
-      description,
-      difficulty,
-      order_index,
+    p_nodes: nodes.map((node) => ({
+      title: node.title,
+      description: node.description,
+      difficulty: node.difficulty,
+      order_index: node.order_index,
+      metadata: { key_concepts: node.key_concepts, practice: node.practice },
     })),
   });
   if (error) {
