@@ -8,10 +8,10 @@ export function Hero() {
   return (
     <section data-snap-section className="mx-auto grid w-full max-w-page items-center gap-12 px-6 py-section md:grid-cols-2 md:gap-16">
       <div className="animate-fade-up">
-        <p className="mb-4 font-mono text-xs font-medium uppercase tracking-[0.6px] text-accent">
-          Aprendizaje guiado por IA
+        <p className="mb-4 font-display text-xs font-medium uppercase tracking-[0.6px] text-accent">
+          Rutas de aprendizaje visuales y personalizadas
         </p>
-        <h1 className="font-serif text-hero font-medium text-foreground">
+        <h1 className="font-display text-hero font-medium text-foreground">
           Aprendé cualquier tema con una ruta clara.
         </h1>
         <p className="mt-6 max-w-[72ch] text-lg text-muted-foreground">
