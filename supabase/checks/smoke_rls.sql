@@ -67,10 +67,45 @@ begin
   select count(*) into n from public.nodes where roadmap_id = rid;
   if n <> 1 then raise exception 'FALLO: A ve % nodos propios (esperado 1)', n; end if;
 
+  -- 6. Cuota: con límite 2, A reserva 2 veces y la tercera se rechaza; B no se ve afectado.
+  if not public.reserve_generation(2) then raise exception 'FALLO: 1ª reserva rechazada'; end if;
+  if not public.reserve_generation(2) then raise exception 'FALLO: 2ª reserva rechazada'; end if;
+  if public.reserve_generation(2) then raise exception 'FALLO: A superó el límite diario'; end if;
+  begin
+    delete from public.ai_usage;
+    get diagnostics n = row_count;
+    if n <> 0 then raise exception 'FALLO: A pudo borrar su uso y reiniciar la cuota'; end if;
+  exception when insufficient_privilege then
+    raise notice 'ok: borrar ai_usage bloqueado';
+  end;
+  perform set_config('request.jwt.claims', json_build_object('sub', user_b, 'role', 'authenticated')::text, true);
+  if not public.reserve_generation(2) then raise exception 'FALLO: la cuota de A afectó a B'; end if;
+  select count(*) into n from public.ai_usage;
+  if n <> 1 then raise exception 'FALLO: B ve % filas de ai_usage (esperado 1)', n; end if;
+
+  -- 7. RPC atómico: guarda roadmap + nodos; con nodos inválidos no deja nada a medias.
+  perform set_config('request.jwt.claims', json_build_object('sub', user_a, 'role', 'authenticated')::text, true);
+  rid := public.create_roadmap_with_nodes('Rust', 'Ruta Rust',
+    '[{"title":"a","description":"d","difficulty":"Básico","order_index":0},
+      {"title":"b","description":"d","difficulty":"Avanzado","order_index":1}]'::jsonb);
+  select count(*) into n from public.nodes where roadmap_id = rid;
+  if n <> 2 then raise exception 'FALLO RPC: % nodos (esperado 2)', n; end if;
+
+  begin
+    perform public.create_roadmap_with_nodes('Go', 'Ruta Go',
+      '[{"title":"a","description":"d","difficulty":"Básico","order_index":0},
+        {"title":"b","description":"d","difficulty":"Inexistente","order_index":1}]'::jsonb);
+    raise exception 'FALLO: el RPC aceptó una dificultad inválida';
+  exception when invalid_text_representation then
+    raise notice 'ok: dificultad inválida rechazada';
+  end;
+  select count(*) into n from public.roadmaps where topic = 'Go';
+  if n <> 0 then raise exception 'FALLO RPC: quedó un roadmap huérfano'; end if;
+
   execute 'reset role';
 end;
 $$;
 
-select 'OK: trigger + RLS verificados' as resultado;
+select 'OK: trigger + RLS + cuota + RPC verificados' as resultado;
 
 rollback;
