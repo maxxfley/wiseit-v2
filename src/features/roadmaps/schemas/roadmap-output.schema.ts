@@ -15,6 +15,8 @@ export const roadmapWireSchema = z.object({
       title: z.string(),
       description: z.string(),
       difficulty: z.enum(DIFFICULTY_LEVELS),
+      key_concepts: z.array(z.string()),
+      practice: z.string(),
     }),
   ),
 });
@@ -27,8 +29,10 @@ export function roadmapJsonSchema(): Record<string, unknown> {
 
 const nodeSchema = z.object({
   title: z.string().trim().min(1).max(200),
-  description: z.string().trim().min(1).max(1000),
+  description: z.string().trim().min(1).max(1500),
   difficulty: z.enum(DIFFICULTY_LEVELS),
+  key_concepts: z.array(z.string().trim().min(1).max(160)).min(3).max(5),
+  practice: z.string().trim().min(1).max(500),
 });
 
 /** Validación real de la respuesta: los datos de la IA no son confiables hasta pasar por aquí. */
@@ -38,8 +42,8 @@ export const roadmapOutputSchema = z.object({
     .array(nodeSchema)
     .min(AI_LIMITS.minNodes)
     .max(AI_LIMITS.maxNodes)
-    .refine((nodes) => DIFFICULTY_LEVELS.every((level) => nodes.some((n) => n.difficulty === level)), {
-      message: "La ruta debe incluir los tres niveles.",
+    .refine((nodes) => DIFFICULTY_LEVELS.every((level) => nodes.filter((n) => n.difficulty === level).length >= 2), {
+      message: "La ruta debe incluir al menos 2 pasos de cada nivel.",
     }),
 });
 
