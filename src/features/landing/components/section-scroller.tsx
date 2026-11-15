@@ -34,7 +34,7 @@ function durationFor(distance: number): number {
 /**
  * Scroll por secciones con rueda: cualquier gesto, por pequeño que sea, desliza suavemente
  * hasta el siguiente borde de sección. Solo en punteros finos y sin "reducir movimiento";
- * en táctiles manda el snap nativo de globals.css.
+ * en táctiles no hay imantado: scroll nativo libre.
  */
 export function SectionScroller() {
   useEffect(() => {

@@ -110,26 +110,16 @@ body {
 /*
  * Scroll suave general. En punteros finos (mouse/trackpad) el desplazamiento por secciones lo
  * anima <SectionScroller> con JS (src/features/landing/components/section-scroller.tsx);
- * en táctiles se usa el snap nativo con proximity. Solo en páginas con data-snap-section.
+ * en táctiles NO hay imantado (scroll nativo libre: el snap forzaba el scroll al llegar al tope
+ * y dificultaba tocar la navbar en iPhone). Solo en páginas con data-snap-section.
  */
 html {
   scroll-behavior: smooth;
 }
 
-[data-snap-section] {
-  scroll-snap-align: start;
-}
-
-@media (pointer: coarse) {
-  html:has([data-snap-section]) {
-    scroll-snap-type: y proximity;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-    scroll-snap-type: none !important;
   }
 
   *,
