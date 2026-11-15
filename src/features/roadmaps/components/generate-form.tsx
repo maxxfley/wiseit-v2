@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { generateRoadmapAction } from "../actions/generate-roadmap";
 import { INITIAL_GENERATE_STATE } from "../types";
-import { RoadmapResult } from "./roadmap-result";
 
 export function GenerateForm() {
   const [state, formAction] = useActionState(generateRoadmapAction, INITIAL_GENERATE_STATE);
@@ -36,7 +35,6 @@ export function GenerateForm() {
         ) : null}
         <SubmitButton pendingLabel="Generando tu ruta…">Generar ruta</SubmitButton>
       </form>
-      {state.status === "success" && state.roadmap ? <RoadmapResult roadmap={state.roadmap} /> : null}
     </div>
   );
 }
