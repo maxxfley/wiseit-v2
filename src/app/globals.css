@@ -89,8 +89,19 @@
   }
 }
 
+/*
+ * Atmósfera de fondo: halos difusos violeta (arriba) y azul frío (abajo) sobre el
+ * Night Canvas, inspirados en el "upward bloom" de DESIGN.md › Elevation. Solo decoración:
+ * ningún componente depende de ellos. Para un fondo plano, borrar `background-image`.
+ */
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image:
+    radial-gradient(60rem 32rem at 50% -8rem, rgb(133 59 206 / 0.22), transparent 70%),
+    radial-gradient(46rem 30rem at 100% 70%, rgb(48 110 232 / 0.10), transparent 70%),
+    radial-gradient(40rem 26rem at 0% 100%, rgb(133 59 206 / 0.10), transparent 70%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--text-body);
   font-family: var(--font-sans);
   line-height: 1.65;
