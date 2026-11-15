@@ -30,7 +30,7 @@ export default function ConfirmPage({ searchParams }: PageProps<"/auth/confirm">
   return (
     <main className="mx-auto flex w-full max-w-page flex-1 items-center justify-center px-6 py-12">
       <Card className="w-full max-w-md bg-surface-raised p-8">
-        <h1 className="font-serif text-3xl font-medium tracking-[-0.8px] text-foreground">
+        <h1 className="font-display text-3xl font-medium tracking-[-0.8px] text-foreground">
           Confirmá tu email
         </h1>
         <p className="mt-2 mb-8 text-muted-foreground">
