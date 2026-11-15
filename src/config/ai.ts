@@ -4,10 +4,10 @@ export const AI_LIMITS = {
   dailyGenerations: 6,
   topicMinLength: 2,
   topicMaxLength: 200,
-  minNodes: 6,
-  maxNodes: 15,
+  minNodes: 9,
+  maxNodes: 18,
   /** Incluye los tokens de razonamiento de gpt-oss, por eso es holgado. */
-  maxCompletionTokens: 4096,
-  timeoutMs: 30_000,
+  maxCompletionTokens: 8192,
+  timeoutMs: 60_000,
   maxRetries: 1,
 } as const;
