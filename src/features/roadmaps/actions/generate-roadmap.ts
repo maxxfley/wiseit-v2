@@ -45,7 +45,8 @@ export async function generateRoadmapAction(
   if (!result.ok) return error(FAILURE_MESSAGES[result.reason]);
 
   const nodes = normalizeNodes(result.roadmap.nodes);
-  const id = await saveRoadmap(supabase, topic, result.roadmap.title, nodes);
+  const { title, theme } = result.roadmap;
+  const id = await saveRoadmap(supabase, { topic, title, theme, nodes });
   if (!id) return error("Generamos la ruta pero no pudimos guardarla. Intentá de nuevo.");
 
   // redirect lanza una excepción interna de Next: debe ir fuera de cualquier try/catch.
