@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Dashboard" };
 export default function DashboardPage() {
   return (
     <main className="mx-auto w-full max-w-page flex-1 px-6 py-section">
-      <h1 className="mb-8 font-serif text-4xl font-medium tracking-[-0.8px] text-foreground">
+      <h1 className="mb-8 font-display text-4xl font-medium tracking-[-0.8px] text-foreground">
         Dashboard
       </h1>
       <Suspense fallback={<Skeleton className="h-44 w-full max-w-md" />}>
