@@ -14,6 +14,9 @@ export type GenerationResult =
 
 function classifyError(error: unknown): GenerationFailure {
   if (error instanceof SyntaxError) return "invalid_output"; // JSON.parse de una respuesta truncada
+  // Groq valida el JSON Schema en su servidor y responde 400 si el modelo no lo cumple:
+  // es una salida inválida del modelo (se reintenta gratis), no una caída del servicio.
+  if (error instanceof Groq.BadRequestError && error.message.includes("json_validate_failed")) return "invalid_output";
   if (error instanceof Groq.RateLimitError) return "rate_limited";
   return "unavailable";
 }
