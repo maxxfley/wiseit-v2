@@ -11,12 +11,14 @@ with expected_policies(table_name, policy_name) as (
     ('nodes',    'nodes_select_own'),
     ('nodes',    'nodes_insert_own'),
     ('nodes',    'nodes_update_own'),
-    ('nodes',    'nodes_delete_own')
+    ('nodes',    'nodes_delete_own'),
+    ('ai_usage', 'ai_usage_select_own'),
+    ('ai_usage', 'ai_usage_insert_own')
 )
 select 'RLS habilitado: ' || c.relname as check_name, c.relrowsecurity as ok
 from pg_class c
 join pg_namespace n on n.oid = c.relnamespace
-where n.nspname = 'public' and c.relname in ('profiles', 'roadmaps', 'nodes')
+where n.nspname = 'public' and c.relname in ('profiles', 'roadmaps', 'nodes', 'ai_usage')
 
 union all
 select 'Política: ' || e.policy_name,
@@ -51,4 +53,30 @@ select 'anon sin privilegios en ' || t.table_name,
          select 1 from information_schema.role_table_grants g
          where g.grantee = 'anon' and g.table_schema = 'public' and g.table_name = t.table_name
        )
-from (values ('profiles'), ('roadmaps'), ('nodes')) as t(table_name);
+from (values ('profiles'), ('roadmaps'), ('nodes'), ('ai_usage')) as t(table_name)
+
+union all
+select 'ai_usage sin update/delete para usuarios (la cuota no se reinicia)',
+       not exists (
+         select 1 from pg_policies p
+         where p.schemaname = 'public' and p.tablename = 'ai_usage' and p.cmd in ('UPDATE', 'DELETE')
+       )
+
+union all
+select 'Función SECURITY INVOKER con search_path fijo: ' || f.fname,
+       exists (
+         select 1 from pg_proc p
+         join pg_namespace n on n.oid = p.pronamespace
+         where n.nspname = 'public' and p.proname = f.fname
+           and not p.prosecdef and p.proconfig @> array['search_path=""']
+       )
+from (values ('reserve_generation'), ('create_roadmap_with_nodes')) as f(fname)
+
+union all
+select 'EXECUTE solo para authenticated: ' || f.fname,
+       has_function_privilege('authenticated', f.sig, 'execute')
+       and not has_function_privilege('anon', f.sig, 'execute')
+from (values
+  ('reserve_generation', 'public.reserve_generation(integer)'),
+  ('create_roadmap_with_nodes', 'public.create_roadmap_with_nodes(text, text, jsonb)')
+) as f(fname, sig);
