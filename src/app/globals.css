@@ -1,25 +1,32 @@
 @import "tailwindcss";
 
 /*
- * Tokens semánticos de Wiseit (fuente: DESIGN.md · "Coastal Studio").
+ * Tokens semánticos de Wiseit (fuente: DESIGN.md · "Railway", dark-first).
  * Los componentes NUNCA usan hex directos: consumen estas variables vía las
  * utilidades de Tailwind mapeadas en @theme (bg-surface, text-foreground...).
- * Tema: sigue prefers-color-scheme y puede forzarse con <html data-theme="light|dark">.
+ * Diseño solo oscuro: Railway no define tema claro. Para cambiar de diseño se
+ * edita este archivo y los componentes de src/components/ui/.
  */
 :root {
-  color-scheme: light;
-  --background: #e6ded4; /* Driftwood Pale */
-  --surface: #c8d9e6; /* Seafoam Cloud */
-  --text-primary: #111827; /* Preto suave */
-  --text-secondary: #263c59; /* Deep Current */
-  --primary: #263c59; /* Deep Current */
-  --primary-foreground: #c8d9e6; /* Seafoam Cloud */
-  --accent: #6d89a6; /* Coastal Slate */
-  --border: #afc3d4; /* Ocean Pearl */
-  --ring: #263c59;
-  --danger: #b42318;
+  color-scheme: dark;
+  --background: #13111c; /* Night Canvas */
+  --surface: #1c1a28; /* Tiles y tarjetas */
+  --surface-raised: #1f132a; /* Plum Panel */
+  --text-primary: #ffffff; /* Pure White */
+  --text-body: #dcdce0; /* Fog */
+  --text-secondary: #a1a0ab; /* Slate */
+  --text-tertiary: #6c6b7b; /* Haze */
+  --primary: #853bce; /* Railway Purple */
+  --primary-hover: #a667e4; /* Lilac */
+  --primary-foreground: #ffffff;
+  --accent: #a667e4; /* Lilac para texto de acento */
+  --border: #ffffff1a; /* Hairline translúcido */
+  --border-strong: #33323e; /* Charcoal Line (inputs, hover) */
+  --ring: #a667e4;
+  --danger: #f97066; /* No definido en DESIGN.md: error funcional */
+  --success: #42946e;
 
-  /* z-index contract (DESIGN.md › Layout) */
+  /* z-index contract */
   --z-base: 0;
   --z-nav: 100;
   --z-overlay: 200;
@@ -27,66 +34,46 @@
   --z-toast: 500;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --background: #111827;
-    --surface: #263c59;
-    --text-primary: #e6ded4;
-    --text-secondary: #c8d9e6;
-    --primary: #e6ded4;
-    --primary-foreground: #263c59;
-    --accent: #afc3d4;
-    --border: #6d89a6;
-    --ring: #afc3d4;
-    --danger: #f97066;
-  }
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --background: #111827;
-  --surface: #263c59;
-  --text-primary: #e6ded4;
-  --text-secondary: #c8d9e6;
-  --primary: #e6ded4;
-  --primary-foreground: #263c59;
-  --accent: #afc3d4;
-  --border: #6d89a6;
-  --ring: #afc3d4;
-  --danger: #f97066;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
   --color-foreground: var(--text-primary);
+  --color-body: var(--text-body);
   --color-muted-foreground: var(--text-secondary);
+  --color-subtle: var(--text-tertiary);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
   --color-accent: var(--accent);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-ring: var(--ring);
   --color-danger: var(--danger);
+  --color-success: var(--success);
 
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), -apple-system, system-ui, "Segoe UI", sans-serif;
+  --font-serif: var(--font-plex-serif), Georgia, serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
 
 @theme {
-  --radius-sm: 20px;
-  --radius-md: 40px;
-  --radius-lg: 60px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
 
-  --text-hero: clamp(2.5rem, 5vw, 4rem);
-  --text-hero--line-height: 1.1;
+  --text-hero: clamp(2.5rem, 5vw, 3.5rem);
+  --text-hero--line-height: 1.05;
+  --text-hero--letter-spacing: -1.4px;
 
-  --spacing-section: clamp(4rem, 8vw, 8rem);
+  --spacing-section: clamp(4rem, 8vw, 6rem);
   --container-page: 1280px;
 
-  --shadow-card: 0 2px 12px rgb(17 24 39 / 0.06);
-  --shadow-lift: 0 6px 20px rgb(17 24 39 / 0.12);
+  /* Elevación: el borde hace el trabajo; el glow solo en hover de CTAs. */
+  --shadow-glow: 0 0 8px #b428b459, 0 0 24px #662bdf59;
+  --shadow-float: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 
   --animate-fade-up: fade-up 420ms ease-out both;
 
@@ -102,11 +89,22 @@
   }
 }
 
+/*
+ * Atmósfera de fondo: halos difusos violeta (arriba) y azul frío (abajo) sobre el
+ * Night Canvas, inspirados en el "upward bloom" de DESIGN.md › Elevation. Solo decoración:
+ * ningún componente depende de ellos. Para un fondo plano, borrar `background-image`.
+ */
 body {
-  background: var(--background);
-  color: var(--text-primary);
+  background-color: var(--background);
+  background-image:
+    radial-gradient(60rem 32rem at 50% -8rem, rgb(133 59 206 / 0.22), transparent 70%),
+    radial-gradient(46rem 30rem at 100% 70%, rgb(48 110 232 / 0.10), transparent 70%),
+    radial-gradient(40rem 26rem at 0% 100%, rgb(133 59 206 / 0.10), transparent 70%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: var(--text-body);
   font-family: var(--font-sans);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 @media (prefers-reduced-motion: reduce) {
