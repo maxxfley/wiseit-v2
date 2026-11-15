@@ -8,10 +8,13 @@ export type DifficultyLevel = (typeof DIFFICULTY_LEVELS)[number];
 /**
  * Forma que se le exige a Groq (Structured Outputs estricto). Sin longitudes ni conteos:
  * la documentación no garantiza que el modo estricto los soporte, así que se validan abajo.
+ * `theme` e `icon` van como texto libre A PROPÓSITO: Groq rechaza con 400 toda la respuesta si
+ * el modelo elige un valor fuera de un enum, y un ícono no debe tumbar una ruta. La lista
+ * permitida va en el prompt y aquí abajo un valor desconocido cae al de por defecto.
  */
 export const roadmapWireSchema = z.object({
   title: z.string(),
-  theme: z.enum(ROADMAP_THEMES),
+  theme: z.string(),
   nodes: z.array(
     z.object({
       id: z.string(),
@@ -19,7 +22,7 @@ export const roadmapWireSchema = z.object({
       description: z.string(),
       difficulty: z.enum(DIFFICULTY_LEVELS),
       requires: z.array(z.string()),
-      icon: z.enum(NODE_ICONS),
+      icon: z.string(),
       key_concepts: z.array(z.string()),
       practice: z.string(),
     }),
