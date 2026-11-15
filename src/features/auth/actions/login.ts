@@ -18,7 +18,7 @@ export async function loginAction(_prev: AuthFormState, formData: FormData): Pro
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
 
   if (error) {
-    console.error("[auth/login] Fallo de inicio de sesión", { code: error.code, status: error.status });
+    console.error("[auth/login] Fallo de inicio de sesión", { code: error.code, status: error.status, message: error.message });
     if (error.code === "email_not_confirmed") return formError("Confirmá tu email antes de ingresar.");
     if (error.code === "over_request_rate_limit") return formError("Demasiados intentos. Esperá un momento.");
     return formError("Credenciales inválidas.");
