@@ -25,7 +25,7 @@ export async function confirmEmailAction(_prev: AuthFormState, formData: FormDat
   });
 
   if (error) {
-    console.error("[auth/confirm] Fallo al verificar el token", { code: error.code, status: error.status });
+    console.error("[auth/confirm] Fallo al verificar el token", { code: error.code, status: error.status, message: error.message });
     return formError("El link expiró o ya fue usado. Registrate de nuevo para recibir otro.");
   }
 

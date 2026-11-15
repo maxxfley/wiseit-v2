@@ -19,7 +19,7 @@ export async function signupAction(_prev: AuthFormState, formData: FormData): Pr
   const { error } = await supabase.auth.signUp(parsed.data);
 
   if (error) {
-    console.error("[auth/signup] Fallo de registro", { code: error.code, status: error.status });
+    console.error("[auth/signup] Fallo de registro", { code: error.code, status: error.status, message: error.message });
     if (error.code === "over_request_rate_limit" || error.code === "over_email_send_rate_limit") {
       return formError("Demasiados intentos. Esperá un momento.");
     }
