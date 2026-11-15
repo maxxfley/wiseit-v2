@@ -22,7 +22,7 @@ export function AuthCard({
 }: AuthCardProps) {
   return (
     <Card className="w-full max-w-md animate-fade-up bg-surface-raised p-8">
-      <h1 className="font-serif text-3xl font-medium tracking-[-0.8px] text-foreground">{title}</h1>
+      <h1 className="font-display text-3xl font-medium tracking-[-0.8px] text-foreground">{title}</h1>
       <p className="mt-2 text-muted-foreground">{description}</p>
       <div className="mt-8">{children}</div>
       <p className="mt-6 text-sm text-muted-foreground">
