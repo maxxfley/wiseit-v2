@@ -1,6 +1,7 @@
 export interface AuthFieldErrors {
   email?: string[];
   password?: string[];
+  confirmPassword?: string[];
 }
 
 /** Estado devuelto por las Server Actions de auth a `useActionState`. */

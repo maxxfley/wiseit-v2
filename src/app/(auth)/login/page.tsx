@@ -16,8 +16,10 @@ async function LoginForm({ searchParams }: Pick<PageProps<"/login">, "searchPara
       action={loginAction}
       submitLabel="Ingresar"
       pendingLabel="Ingresando…"
+      fields={["email", "password"]}
       passwordAutoComplete="current-password"
-      next={safeRedirect(next)}
+      hidden={{ next: safeRedirect(next) }}
+      forgotHref={ROUTES.forgotPassword}
     />
   );
 }
