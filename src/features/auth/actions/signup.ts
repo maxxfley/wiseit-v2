@@ -12,11 +12,12 @@ export async function signupAction(_prev: AuthFormState, formData: FormData): Pr
   const parsed = signupSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
   });
   if (!parsed.success) return validationError(parsed.error);
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signUp(parsed.data);
+  const { error } = await supabase.auth.signUp({ email: parsed.data.email, password: parsed.data.password });
 
   if (error) {
     console.error("[auth/signup] Fallo de registro", { code: error.code, status: error.status, message: error.message });
