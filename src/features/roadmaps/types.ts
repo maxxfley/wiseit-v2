@@ -5,6 +5,8 @@ export interface GeneratedNode {
   description: string;
   difficulty: DifficultyLevel;
   order_index: number;
+  key_concepts: string[];
+  practice: string;
 }
 
 export interface GeneratedRoadmap {

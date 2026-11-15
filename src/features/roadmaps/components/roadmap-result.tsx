@@ -17,6 +17,20 @@ export function RoadmapResult({ roadmap }: { roadmap: GeneratedRoadmap }) {
             </span>
             <p className="font-medium text-foreground">{node.title}</p>
             <p className="text-sm text-muted-foreground">{node.description}</p>
+            <ul className="mt-2 flex flex-wrap gap-1.5">
+              {node.key_concepts.map((concept) => (
+                <li
+                  key={concept}
+                  className="rounded-xs border border-border px-2 py-0.5 font-mono text-xs text-body"
+                >
+                  {concept}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 text-sm text-body">
+              <span className="font-medium text-foreground">Practicá: </span>
+              {node.practice}
+            </p>
           </li>
         ))}
       </ol>
