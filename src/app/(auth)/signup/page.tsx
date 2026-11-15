@@ -19,7 +19,7 @@ export default function SignupPage() {
         action={signupAction}
         submitLabel="Crear cuenta"
         pendingLabel="Creando cuenta…"
-        passwordAutoComplete="new-password"
+        fields={["email", "password", "confirmPassword"]}
       />
     </AuthCard>
   );
