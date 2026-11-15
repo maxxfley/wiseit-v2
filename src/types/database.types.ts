@@ -40,8 +40,46 @@ export type Database = {
           },
         ]
       }
+      node_edges: {
+        Row: {
+          created_at: string
+          node_id: string
+          requires_node_id: string
+          roadmap_id: string
+        }
+        Insert: {
+          created_at?: string
+          node_id: string
+          requires_node_id: string
+          roadmap_id: string
+        }
+        Update: {
+          created_at?: string
+          node_id?: string
+          requires_node_id?: string
+          roadmap_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "node_edges_node_fkey"
+            columns: ["roadmap_id", "node_id"]
+            isOneToOne: false
+            referencedRelation: "nodes"
+            referencedColumns: ["roadmap_id", "id"]
+          },
+          {
+            foreignKeyName: "node_edges_requires_fkey"
+            columns: ["roadmap_id", "requires_node_id"]
+            isOneToOne: false
+            referencedRelation: "nodes"
+            referencedColumns: ["roadmap_id", "id"]
+          },
+        ]
+      }
       nodes: {
         Row: {
+          completed_at: string | null
+          completed_concepts: number[]
           created_at: string
           description: string
           difficulty: Database["public"]["Enums"]["difficulty_level"]
@@ -50,9 +88,12 @@ export type Database = {
           order_index: number
           parent_id: string | null
           roadmap_id: string
+          started_at: string | null
           title: string
         }
         Insert: {
+          completed_at?: string | null
+          completed_concepts?: number[]
           created_at?: string
           description: string
           difficulty: Database["public"]["Enums"]["difficulty_level"]
@@ -61,9 +102,12 @@ export type Database = {
           order_index: number
           parent_id?: string | null
           roadmap_id: string
+          started_at?: string | null
           title: string
         }
         Update: {
+          completed_at?: string | null
+          completed_concepts?: number[]
           created_at?: string
           description?: string
           difficulty?: Database["public"]["Enums"]["difficulty_level"]
@@ -72,6 +116,7 @@ export type Database = {
           order_index?: number
           parent_id?: string | null
           roadmap_id?: string
+          started_at?: string | null
           title?: string
         }
         Relationships: [
@@ -113,6 +158,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          theme: string
           title: string
           topic: string
           user_id: string
@@ -120,6 +166,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          theme?: string
           title: string
           topic: string
           user_id: string
@@ -127,6 +174,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          theme?: string
           title?: string
           topic?: string
           user_id?: string
@@ -147,11 +195,24 @@ export type Database = {
     }
     Functions: {
       create_roadmap_with_nodes: {
-        Args: { p_nodes: Json; p_title: string; p_topic: string }
+        Args: {
+          p_nodes: Json
+          p_theme: string
+          p_title: string
+          p_topic: string
+        }
         Returns: string
       }
       owns_roadmap: { Args: { target_roadmap_id: string }; Returns: boolean }
       reserve_generation: { Args: { p_daily_limit: number }; Returns: boolean }
+      update_node_progress: {
+        Args: {
+          p_completed_concepts: number[]
+          p_mark_complete: boolean
+          p_node_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       difficulty_level: "Básico" | "Intermedio" | "Avanzado"
