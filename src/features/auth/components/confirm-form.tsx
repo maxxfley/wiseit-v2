@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { confirmEmailAction } from "../actions/confirm";
 import { INITIAL_AUTH_STATE } from "../types";
-import { SubmitButton } from "./submit-button";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 interface ConfirmFormProps {
   tokenHash: string;
