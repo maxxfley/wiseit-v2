@@ -14,6 +14,32 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_usage: {
+        Row: {
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       nodes: {
         Row: {
           created_at: string
@@ -120,7 +146,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_roadmap_with_nodes: {
+        Args: { p_nodes: Json; p_title: string; p_topic: string }
+        Returns: string
+      }
       owns_roadmap: { Args: { target_roadmap_id: string }; Returns: boolean }
+      reserve_generation: { Args: { p_daily_limit: number }; Returns: boolean }
     }
     Enums: {
       difficulty_level: "Básico" | "Intermedio" | "Avanzado"
