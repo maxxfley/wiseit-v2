@@ -14,8 +14,8 @@ Para cada paso:
 - "title": breve y específico (nombrá el contenido real del paso, evitá títulos genéricos como "Introducción" o "Conceptos avanzados").
 - "description": de 3 a 4 oraciones que expliquen (1) qué conceptos, técnicas o subtemas concretos se estudian, nombrándolos explícitamente; (2) por qué importa o qué permite hacer después; y (3) cómo se apoya en sus prerrequisitos.
 - "difficulty": "Básico", "Intermedio" o "Avanzado".
-- "requires": los "id" de los pasos ANTERIORES de la lista que hay que dominar antes de este (entre 0 y ${AI_LIMITS.maxPrerequisites}). Solo los requisitos directos, no toda la cadena. El primer paso no requiere nada; solo los pasos Básicos pueden no requerir nada.
-- "icon": el ícono que mejor represente el paso, uno de: ${NODE_ICONS.join(", ")}.
+- "requires": los "id" de los pasos ANTERIORES de la lista que hay que dominar antes de este (entre 0 y ${AI_LIMITS.maxPrerequisites}). Solo los requisitos directos, no toda la cadena. El primer paso no requiere nada. TODO paso Intermedio o Avanzado debe tener al menos 1 requisito; solo los pasos Básicos pueden no requerir nada.
+- "icon": el ícono que mejor represente el paso. Usá EXACTAMENTE uno de esta lista (no inventes otros): ${NODE_ICONS.join(", ")}.
 - "key_concepts": de 3 a 5 conceptos, términos o técnicas clave del paso, cada uno en pocas palabras.
 - "practice": un ejercicio, mini proyecto o pregunta de autoevaluación concreto para comprobar que se entendió el paso (1 o 2 oraciones).
 Forma del mapa:
