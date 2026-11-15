@@ -1,6 +1,8 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { AI_LIMITS } from "@/config/ai";
+import { ROUTES } from "@/config/routes";
 import { getCurrentUser } from "@/features/auth/services/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { generateInputSchema } from "../schemas/generate-input.schema";
@@ -46,5 +48,6 @@ export async function generateRoadmapAction(
   const id = await saveRoadmap(supabase, topic, result.roadmap.title, nodes);
   if (!id) return error("Generamos la ruta pero no pudimos guardarla. Intentá de nuevo.");
 
-  return { status: "success", roadmap: { id, title: result.roadmap.title, nodes } };
+  // redirect lanza una excepción interna de Next: debe ir fuera de cualquier try/catch.
+  redirect(`${ROUTES.roadmaps}/${id}`);
 }
