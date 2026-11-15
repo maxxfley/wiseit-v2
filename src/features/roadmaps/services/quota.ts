@@ -20,3 +20,19 @@ export async function reserveGeneration(supabase: SupabaseClient<Database>): Pro
   }
   return data ? "granted" : "exhausted";
 }
+
+/** Intentos que le quedan hoy (UTC) al usuario, o null si no se pudo consultar. Solo lectura. */
+export async function getRemainingGenerations(supabase: SupabaseClient<Database>): Promise<number | null> {
+  const startOfDay = new Date();
+  startOfDay.setUTCHours(0, 0, 0, 0);
+
+  const { count, error } = await supabase
+    .from("ai_usage")
+    .select("id", { count: "exact", head: true })
+    .gte("created_at", startOfDay.toISOString());
+  if (error) {
+    console.error("[roadmaps/quota] Fallo al contar intentos", { code: error.code, message: error.message });
+    return null;
+  }
+  return Math.max(0, AI_LIMITS.dailyGenerations - (count ?? 0));
+}
