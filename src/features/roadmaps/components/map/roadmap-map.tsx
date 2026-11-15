@@ -69,6 +69,9 @@ export function RoadmapMap({ roadmapId, theme, nodes: serverNodes }: RoadmapMapP
         nodesFocusable={false}
         edgesFocusable={false}
         elementsSelectable={false}
+        // Imprescindible: sin onNodeClick (y con nodos no seleccionables ni arrastrables) React Flow
+        // les pone pointer-events: none y el clic cae en el lienzo, que cierra el panel.
+        onNodeClick={(_, node) => select(node.id)}
         onPaneClick={() => select(null)}
       >
         <Background variant={BackgroundVariant.Dots} gap={28} size={1} color="var(--border-strong)" />
