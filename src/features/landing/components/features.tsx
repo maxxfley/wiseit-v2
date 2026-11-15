@@ -39,7 +39,7 @@ const FEATURES: readonly Feature[] = [
 
 export function Features() {
   return (
-    <section className="mx-auto w-full max-w-page px-6 py-section">
+    <section data-snap-section className="mx-auto w-full max-w-page px-6 py-section">
       <div className="grid gap-4 md:grid-cols-3">
         {FEATURES.map(({ icon: Icon, title, description, wide }) => (
           <Card key={title} className={cn("p-8", wide && "md:col-span-2")}>

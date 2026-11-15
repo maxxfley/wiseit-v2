@@ -6,7 +6,7 @@ import { RoadmapPreview } from "@/features/roadmaps/components/roadmap-preview";
 /** El CTA siempre apunta a /signup: con sesión activa, el proxy ya redirige al dashboard. */
 export function Hero() {
   return (
-    <section className="mx-auto grid w-full max-w-page items-center gap-12 px-6 py-section md:grid-cols-2 md:gap-16">
+    <section data-snap-section className="mx-auto grid w-full max-w-page items-center gap-12 px-6 py-section md:grid-cols-2 md:gap-16">
       <div className="animate-fade-up">
         <p className="mb-4 font-mono text-xs font-medium uppercase tracking-[0.6px] text-accent">
           Aprendizaje guiado por IA

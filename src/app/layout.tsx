@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   const fontVars = `${inter.variable} ${interTight.variable} ${jetbrainsMono.variable}`;
   return (
-    <html lang="es" className={`${fontVars} antialiased`}>
+    <html lang="es" data-scroll-behavior="smooth" className={`${fontVars} antialiased`}>
       <body className="flex min-h-[100dvh] flex-col">{children}</body>
     </html>
   );
