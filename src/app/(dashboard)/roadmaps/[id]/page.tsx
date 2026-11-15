@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/config/routes";
 import { RoadmapTimeline } from "@/features/roadmaps/components/roadmap-timeline";
-import { getRoadmapDetail } from "@/features/roadmaps/services/queries";
+import { getRoadmapDetail } from "@/features/roadmaps/services/roadmap-detail";
 import { formatDate } from "@/utils/format-date";
 
 export const metadata: Metadata = { title: "Ruta de aprendizaje" };
