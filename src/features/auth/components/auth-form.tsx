@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { INITIAL_AUTH_STATE, type AuthAction } from "../types";
 import { FormField } from "./form-field";
-import { SubmitButton } from "./submit-button";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 interface AuthFormProps {
   action: AuthAction;
