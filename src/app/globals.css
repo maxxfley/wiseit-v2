@@ -108,20 +108,22 @@ body {
 }
 
 /*
- * Scroll suave con "imán" semiautomático: al soltar la rueda cerca de una sección, el
- * navegador la alinea solo (mandatory: siempre termina alineada). Se activa únicamente en páginas que
- * marcan secciones con data-snap-section (la landing). Con movimiento reducido se desactiva.
+ * Scroll suave general. En punteros finos (mouse/trackpad) el desplazamiento por secciones lo
+ * anima <SectionScroller> con JS (src/features/landing/components/section-scroller.tsx);
+ * en táctiles se usa el snap nativo con proximity. Solo en páginas con data-snap-section.
  */
 html {
   scroll-behavior: smooth;
 }
 
-html:has([data-snap-section]) {
-  scroll-snap-type: y mandatory;
-}
-
 [data-snap-section] {
   scroll-snap-align: start;
+}
+
+@media (pointer: coarse) {
+  html:has([data-snap-section]) {
+    scroll-snap-type: y proximity;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
