@@ -1,22 +1,39 @@
 "use client"; // useActionState requiere el cliente.
 
+import Link from "next/link";
 import { useActionState } from "react";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { INITIAL_AUTH_STATE, type AuthAction } from "../types";
 import { FormField } from "./form-field";
-import { SubmitButton } from "@/components/ui/submit-button";
+import { PasswordField } from "./password-field";
 
 interface AuthFormProps {
   action: AuthAction;
   submitLabel: string;
   pendingLabel: string;
-  passwordAutoComplete: "current-password" | "new-password";
-  /** Ruta interna validada por el servidor; solo se usa en el login. */
-  next?: string;
+  /** Campos a mostrar, en orden. */
+  fields: readonly ("email" | "password" | "confirmPassword")[];
+  passwordAutoComplete?: "current-password" | "new-password";
+  passwordLabel?: string;
+  /** Valores ocultos (ruta `next` validada, token de recuperación…). */
+  hidden?: Readonly<Record<string, string>>;
+  /** Si se pasa, muestra el enlace "¿Olvidaste tu contraseña?" bajo la contraseña. */
+  forgotHref?: string;
 }
 
-/** Formulario de email + contraseña compartido por login y signup. */
-export function AuthForm({ action, submitLabel, pendingLabel, passwordAutoComplete, next }: AuthFormProps) {
+/** Formulario de autenticación configurable, compartido por login, signup y recuperación. */
+export function AuthForm({
+  action,
+  submitLabel,
+  pendingLabel,
+  fields,
+  passwordAutoComplete = "new-password",
+  passwordLabel = "Contraseña",
+  hidden = {},
+  forgotHref,
+}: AuthFormProps) {
   const [state, formAction] = useActionState(action, INITIAL_AUTH_STATE);
+  const errors = state.fieldErrors;
 
   if (state.status === "success") {
     return (
@@ -28,15 +45,30 @@ export function AuthForm({ action, submitLabel, pendingLabel, passwordAutoComple
 
   return (
     <form action={formAction} className="space-y-5" noValidate>
-      {next ? <input type="hidden" name="next" value={next} /> : null}
-      <FormField name="email" label="Email" type="email" autoComplete="email" errors={state.fieldErrors?.email} />
-      <FormField
-        name="password"
-        label="Contraseña"
-        type="password"
-        autoComplete={passwordAutoComplete}
-        errors={state.fieldErrors?.password}
-      />
+      {Object.entries(hidden).map(([name, value]) => (
+        <input key={name} type="hidden" name={name} value={value} />
+      ))}
+      {fields.includes("email") ? (
+        <FormField name="email" label="Email" type="email" autoComplete="email" errors={errors?.email} />
+      ) : null}
+      {fields.includes("password") ? (
+        <div>
+          <PasswordField name="password" label={passwordLabel} autoComplete={passwordAutoComplete} errors={errors?.password} />
+          {forgotHref ? (
+            <Link href={forgotHref} className="mt-2 inline-block text-sm text-muted-foreground hover:text-foreground">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
+      {fields.includes("confirmPassword") ? (
+        <PasswordField
+          name="confirmPassword"
+          label="Repetí tu contraseña"
+          autoComplete="new-password"
+          errors={errors?.confirmPassword}
+        />
+      ) : null}
       {state.message ? (
         <p role="alert" className="text-sm text-danger">
           {state.message}
