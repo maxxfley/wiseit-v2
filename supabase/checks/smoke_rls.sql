@@ -1,4 +1,4 @@
--- Smoke test del Paso 2: trigger de profiles + aislamiento RLS entre dos usuarios.
+-- Smoke test: trigger de profiles, aislamiento RLS, cuota, RPC de creación y grafo + progreso (Paso 6).
 -- Todo ocurre dentro de una transacción que termina en ROLLBACK: no deja datos.
 -- Si algo falla, aborta con 'FALLO: ...'. Si todo pasa, devuelve 'OK'.
 
@@ -85,7 +85,7 @@ begin
 
   -- 7. RPC atómico: guarda roadmap + nodos; con nodos inválidos no deja nada a medias.
   perform set_config('request.jwt.claims', json_build_object('sub', user_a, 'role', 'authenticated')::text, true);
-  rid := public.create_roadmap_with_nodes('Rust', 'Ruta Rust',
+  rid := public.create_roadmap_with_nodes('Rust', 'Ruta Rust', null,
     '[{"title":"a","description":"d","difficulty":"Básico","order_index":0,
        "metadata":{"key_concepts":["x","y","z"],"practice":"hacé algo"}},
       {"title":"b","description":"d","difficulty":"Avanzado","order_index":1}]'::jsonb);
@@ -99,7 +99,7 @@ begin
   if n <> 1 then raise exception 'FALLO RPC: un nodo sin metadata debe quedar en {}'; end if;
 
   begin
-    perform public.create_roadmap_with_nodes('Go', 'Ruta Go',
+    perform public.create_roadmap_with_nodes('Go', 'Ruta Go', 'default',
       '[{"title":"a","description":"d","difficulty":"Básico","order_index":0},
         {"title":"b","description":"d","difficulty":"Inexistente","order_index":1}]'::jsonb);
     raise exception 'FALLO: el RPC aceptó una dificultad inválida';
@@ -109,10 +109,112 @@ begin
   select count(*) into n from public.roadmaps where topic = 'Go';
   if n <> 0 then raise exception 'FALLO RPC: quedó un roadmap huérfano'; end if;
 
+  -- 8. Grafo: n2 requiere n0 y n1 (convergencia), n1 requiere n0. Tema guardado.
+  rid := public.create_roadmap_with_nodes('Grafos', 'Ruta Grafos', 'cosmos',
+    '[{"title":"n0","description":"d","difficulty":"Básico","order_index":0,"requires":[],
+       "metadata":{"key_concepts":["a","b"],"practice":"p"}},
+      {"title":"n1","description":"d","difficulty":"Básico","order_index":1,"requires":[0],
+       "metadata":{"key_concepts":["a","b","c"],"practice":"p"}},
+      {"title":"n2","description":"d","difficulty":"Intermedio","order_index":2,"requires":[0,1]}]'::jsonb);
+  select count(*) into n from public.node_edges where roadmap_id = rid;
+  if n <> 3 then raise exception 'FALLO grafo: % aristas (esperado 3)', n; end if;
+  select count(*) into n from public.roadmaps where id = rid and theme = 'cosmos';
+  if n <> 1 then raise exception 'FALLO grafo: el tema no se guardó'; end if;
+
+  -- 9. Prerrequisito inexistente o auto-referencia: se rechaza sin dejar nada a medias.
+  begin
+    perform public.create_roadmap_with_nodes('Roto', 'Ruta Rota', null,
+      '[{"title":"a","description":"d","difficulty":"Básico","order_index":0,"requires":[7]}]'::jsonb);
+    raise exception 'FALLO: el RPC aceptó un prerrequisito inexistente';
+  exception when invalid_parameter_value then
+    raise notice 'ok: prerrequisito inexistente rechazado';
+  end;
+  begin
+    perform public.create_roadmap_with_nodes('Roto', 'Ruta Rota', null,
+      '[{"title":"a","description":"d","difficulty":"Básico","order_index":0,"requires":[0]}]'::jsonb);
+    raise exception 'FALLO: el RPC aceptó una auto-referencia';
+  exception when check_violation then
+    raise notice 'ok: auto-referencia rechazada';
+  end;
+  select count(*) into n from public.roadmaps where topic = 'Roto';
+  if n <> 0 then raise exception 'FALLO grafo: quedó un roadmap huérfano'; end if;
+
+  -- 10. Progreso: n1 está bloqueado hasta completar n0.
+  declare
+    n0 uuid; n1 uuid; n2 uuid;
+  begin
+    select id into n0 from public.nodes where roadmap_id = rid and order_index = 0;
+    select id into n1 from public.nodes where roadmap_id = rid and order_index = 1;
+    select id into n2 from public.nodes where roadmap_id = rid and order_index = 2;
+
+    begin
+      perform public.update_node_progress(n1, '{0}', false);
+      raise exception 'FALLO: se pudo avanzar un nodo bloqueado';
+    exception when sqlstate 'WS423' then
+      raise notice 'ok: nodo bloqueado rechazado';
+    end;
+
+    perform public.update_node_progress(n0, '{0}', false);
+    select count(*) into n from public.nodes
+      where id = n0 and started_at is not null and completed_at is null and completed_concepts = '{0}';
+    if n <> 1 then raise exception 'FALLO progreso: n0 debería estar en proceso'; end if;
+
+    begin
+      perform public.update_node_progress(n0, '{0,5}', false);
+      raise exception 'FALLO: se aceptó un índice de concepto inválido';
+    exception when invalid_parameter_value then
+      raise notice 'ok: índice inválido rechazado';
+    end;
+
+    -- Tildar todos los conceptos completa el nodo (con duplicados y desorden normalizados).
+    perform public.update_node_progress(n0, '{1,0,1}', false);
+    select count(*) into n from public.nodes where id = n0 and completed_at is not null and completed_concepts = '{0,1}';
+    if n <> 1 then raise exception 'FALLO progreso: n0 debería estar completado'; end if;
+
+    -- n1 se desbloquea; n2 sigue bloqueado (le falta n1).
+    perform public.update_node_progress(n1, '{}', true);
+    select count(*) into n from public.nodes where id = n1 and completed_at is not null and completed_concepts = '{0,1,2}';
+    if n <> 1 then raise exception 'FALLO progreso: marcar completo debe tildar todos los conceptos'; end if;
+
+    -- Destildar un concepto reabre el nodo.
+    perform public.update_node_progress(n1, '{0,1}', false);
+    select count(*) into n from public.nodes where id = n1 and completed_at is null;
+    if n <> 1 then raise exception 'FALLO progreso: destildar debe reabrir el nodo'; end if;
+    begin
+      perform public.update_node_progress(n2, '{}', true);
+      raise exception 'FALLO: n2 avanzó con un prerrequisito abierto';
+    exception when sqlstate 'WS423' then
+      raise notice 'ok: convergencia bloquea hasta completar todos los requisitos';
+    end;
+
+    -- 11. B no ve las aristas de A, no puede insertar en su roadmap ni tocar su progreso.
+    perform set_config('request.jwt.claims', json_build_object('sub', user_b, 'role', 'authenticated')::text, true);
+    select count(*) into n from public.node_edges;
+    if n <> 0 then raise exception 'FALLO: B ve % aristas ajenas', n; end if;
+    begin
+      insert into public.node_edges (roadmap_id, node_id, requires_node_id) values (rid, n1, n2);
+      raise exception 'FALLO: B insertó una arista en el roadmap de A';
+    exception when insufficient_privilege then
+      raise notice 'ok: arista en roadmap ajeno bloqueada';
+    end;
+    begin
+      perform public.update_node_progress(n0, '{}', false);
+      raise exception 'FALLO: B modificó el progreso de A';
+    exception when sqlstate 'WS404' then
+      raise notice 'ok: progreso ajeno inaccesible';
+    end;
+
+    -- 12. Borrar el roadmap arrastra nodos y aristas.
+    perform set_config('request.jwt.claims', json_build_object('sub', user_a, 'role', 'authenticated')::text, true);
+    delete from public.roadmaps where id = rid;
+    select count(*) into n from public.node_edges where roadmap_id = rid;
+    if n <> 0 then raise exception 'FALLO: quedaron % aristas tras borrar el roadmap', n; end if;
+  end;
+
   execute 'reset role';
 end;
 $$;
 
-select 'OK: trigger + RLS + cuota + RPC verificados' as resultado;
+select 'OK: trigger + RLS + cuota + RPC + grafo + progreso verificados' as resultado;
 
 rollback;

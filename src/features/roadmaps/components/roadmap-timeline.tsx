@@ -1,5 +1,4 @@
-import type { RoadmapNodeView } from "../services/queries";
-import { groupByDifficulty } from "../services/queries";
+import { groupByDifficulty, type RoadmapNodeView } from "../utils/node-status";
 
 function NodeItem({ node }: { node: RoadmapNodeView }) {
   return (
