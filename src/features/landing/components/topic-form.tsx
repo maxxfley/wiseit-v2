@@ -1,6 +1,5 @@
 "use client"; // useActionState requiere el cliente.
 
-import { ArrowRight } from "lucide-react";
 import { useActionState, useId } from "react";
 import { FieldError } from "@/components/ui/field-error";
 import { Input } from "@/components/ui/input";
@@ -23,31 +22,20 @@ export function TopicForm({ className }: { className?: string }) {
       <label htmlFor={`${id}-topic`} className="sr-only">
         {t.landing.hero.topicLabel}
       </label>
-      <div className="flex gap-2">
-        <Input
-          id={`${id}-topic`}
-          name="topic"
-          required
-          maxLength={AI_LIMITS.topicMaxLength}
-          placeholder={t.landing.hero.topicPlaceholder}
-          aria-invalid={Boolean(errors)}
-          aria-describedby={`${id}-error`}
-          className="min-w-0 flex-1"
-        />
-        <button
-          type="submit"
-          disabled={pending}
-          aria-label={t.landing.hero.topicSubmit}
-          title={t.landing.hero.topicSubmit}
-          className={cn(
-            "grid size-[42px] shrink-0 cursor-pointer place-items-center rounded-sm bg-primary text-primary-foreground",
-            "transition-[background-color,box-shadow] duration-200 hover:bg-primary-hover hover:shadow-glow",
-            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-wait disabled:opacity-60",
-          )}
-        >
-          <ArrowRight aria-hidden="true" className="size-5" />
-        </button>
-      </div>
+      {/* Sin botón: con un único campo, Enter envía el formulario de forma nativa. */}
+      <Input
+        id={`${id}-topic`}
+        name="topic"
+        required
+        maxLength={AI_LIMITS.topicMaxLength}
+        placeholder={t.landing.hero.topicPlaceholder}
+        enterKeyHint="go"
+        readOnly={pending}
+        aria-busy={pending}
+        aria-invalid={Boolean(errors)}
+        aria-describedby={`${id}-error`}
+        className={cn(pending && "cursor-wait opacity-60")}
+      />
       <FieldError id={`${id}-error`} messages={errors} />
     </form>
   );
