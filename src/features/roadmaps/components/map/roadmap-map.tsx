@@ -23,7 +23,7 @@ interface RoadmapMapProps {
 }
 
 export function RoadmapMap({ roadmapId, theme, nodes: serverNodes }: RoadmapMapProps) {
-  const { t } = useI18n();
+  const { t, message } = useI18n();
   const { nodes, update, error, pending, clearError } = useNodeProgress(roadmapId, serverNodes);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -92,7 +92,7 @@ export function RoadmapMap({ roadmapId, theme, nodes: serverNodes }: RoadmapMapP
           node={selected}
           byId={byId}
           pending={pending}
-          error={error ? t.messages[error] : null}
+          error={error ? message(error) : null}
           onUpdate={(concepts, markComplete) => update(selected.id, concepts, markComplete)}
           onSelect={select}
           onClose={() => select(null)}

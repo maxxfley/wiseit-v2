@@ -15,7 +15,7 @@ interface DeleteRoadmapButtonProps {
 
 /** Botón + modal de confirmación con `<dialog>` nativo (foco, Esc y backdrop los maneja el navegador). */
 export function DeleteRoadmapButton({ roadmapId, title }: DeleteRoadmapButtonProps) {
-  const { t: dict } = useI18n();
+  const { t: dict, message } = useI18n();
   const t = dict.roadmaps.delete;
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [state, formAction] = useActionState(deleteRoadmapAction, INITIAL_DELETE_STATE);
@@ -38,7 +38,7 @@ export function DeleteRoadmapButton({ roadmapId, title }: DeleteRoadmapButtonPro
         </p>
         {state.status === "error" && state.message ? (
           <p role="alert" className="mt-3 text-sm text-danger">
-            {dict.messages[state.message]}
+            {message(state.message)}
           </p>
         ) : null}
         <form action={formAction} className="mt-6 flex justify-end gap-2">

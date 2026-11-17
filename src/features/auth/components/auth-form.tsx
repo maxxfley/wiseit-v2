@@ -34,7 +34,7 @@ export function AuthForm({
   hidden = {},
   forgotPath,
 }: AuthFormProps) {
-  const { t, href } = useI18n();
+  const { t, href, message } = useI18n();
   const [state, formAction] = useActionState(action, INITIAL_AUTH_STATE);
   // Los errores llegan como claves de validación: se traducen aquí, nunca se muestra la clave.
   const tr = (codes?: readonly string[]) =>
@@ -44,7 +44,7 @@ export function AuthForm({
   if (state.status === "success") {
     return (
       <p role="status" className="rounded-md border border-border bg-surface-raised p-4 text-foreground">
-        {state.message ? t.messages[state.message] : null}
+        {message(state.message)}
       </p>
     );
   }
@@ -82,7 +82,7 @@ export function AuthForm({
       ) : null}
       {state.message ? (
         <p role="alert" className="text-sm text-danger">
-          {t.messages[state.message]}
+          {message(state.message)}
         </p>
       ) : null}
       <SubmitButton pendingLabel={pendingLabel} className="w-full">
