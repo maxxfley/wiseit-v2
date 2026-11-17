@@ -13,8 +13,8 @@ export async function SidebarUser() {
   const t = (await getDictionary()).common.nav;
 
   return (
-    <div className="flex items-center gap-3 md:flex-col md:items-stretch">
-      <p className="hidden break-all text-xs text-muted-foreground md:block">{user.email ?? t.userFallback}</p>
+    <div className="flex flex-col items-stretch gap-3">
+      <p className="break-all text-xs text-muted-foreground">{user.email ?? t.userFallback}</p>
       <form action={logoutAction}>
         <Button type="submit" variant="secondary" className="w-full px-4 py-2 text-sm">
           {t.logout}
