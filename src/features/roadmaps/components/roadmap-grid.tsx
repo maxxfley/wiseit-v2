@@ -2,17 +2,20 @@ import Link from "next/link";
 import { buttonStyles } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ROUTES } from "@/config/routes";
+import { localizePath } from "@/lib/i18n/paths";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import type { RoadmapSummary } from "../services/queries";
 import { RoadmapCard } from "./roadmap-card";
 
-export function RoadmapGrid({ roadmaps }: { roadmaps: readonly RoadmapSummary[] }) {
+export async function RoadmapGrid({ roadmaps }: { roadmaps: readonly RoadmapSummary[] }) {
   if (roadmaps.length === 0) {
+    const t = (await getDictionary()).roadmaps.list;
     return (
       <Card className="flex flex-col items-start gap-4">
-        <p className="text-lg text-foreground">Todavía no tenés rutas.</p>
-        <p className="text-muted-foreground">Elegí un tema y generamos tu primera ruta de aprendizaje.</p>
-        <Link href={ROUTES.dashboard} className={buttonStyles("primary")}>
-          Crear una ruta
+        <p className="text-lg text-foreground">{t.emptyTitle}</p>
+        <p className="text-muted-foreground">{t.emptyBody}</p>
+        <Link href={localizePath(await getLocale(), ROUTES.dashboard)} className={buttonStyles("primary")}>
+          {t.emptyCta}
         </Link>
       </Card>
     );

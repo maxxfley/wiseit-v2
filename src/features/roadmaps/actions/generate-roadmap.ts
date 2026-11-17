@@ -1,8 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { AI_LIMITS } from "@/config/ai";
 import { ROUTES } from "@/config/routes";
+import { getActionLocale } from "@/lib/i18n/action-locale";
+import { localizePath } from "@/lib/i18n/paths";
+import type { MessageKey } from "@/locales/types";
 import { getCurrentUser } from "@/features/auth/services/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { generateInputSchema } from "../schemas/generate-input.schema";
@@ -12,13 +14,13 @@ import { reserveGeneration } from "../services/quota";
 import { saveRoadmap } from "../services/save-roadmap";
 import type { GenerateFormState } from "../types";
 
-const FAILURE_MESSAGES: Record<GenerationFailure, string> = {
-  rate_limited: "El servicio de IA está saturado. Probá de nuevo en un minuto.",
-  unavailable: "No pudimos generar la ruta ahora. Intentá de nuevo más tarde.",
-  invalid_output: "La IA devolvió una ruta inválida. Probá con otro tema o reintentá.",
+const FAILURE_MESSAGES: Record<GenerationFailure, MessageKey> = {
+  rate_limited: "aiRateLimited",
+  unavailable: "aiUnavailable",
+  invalid_output: "aiInvalidOutput",
 };
 
-const error = (message: string): GenerateFormState => ({ status: "error", message });
+const error = (message: MessageKey): GenerateFormState => ({ status: "error", message });
 
 export async function generateRoadmapAction(
   _prev: GenerateFormState,
@@ -26,7 +28,7 @@ export async function generateRoadmapAction(
 ): Promise<GenerateFormState> {
   // Cada Server Action verifica por su cuenta: el proxy y la UI no son la única barrera.
   const user = await getCurrentUser();
-  if (!user) return error("Tu sesión expiró. Volvé a ingresar.");
+  if (!user) return error("sessionExpired");
 
   const parsed = generateInputSchema.safeParse({ topic: formData.get("topic") });
   if (!parsed.success) {
@@ -36,19 +38,20 @@ export async function generateRoadmapAction(
 
   const supabase = await createSupabaseServerClient();
   const quota = await reserveGeneration(supabase);
-  if (quota === "exhausted") {
-    return error(`Llegaste al límite de ${AI_LIMITS.dailyGenerations} rutas por día. Volvé mañana.`);
-  }
-  if (quota === "error") return error("No pudimos verificar tu cupo. Intentá de nuevo más tarde.");
+  if (quota === "exhausted") return error("quotaExhausted");
+  if (quota === "error") return error("quotaError");
 
-  const result = await generateRoadmap(topic);
+  // La ruta se genera en el idioma de la interfaz desde la que se pidió.
+  const locale = await getActionLocale();
+  console.info("[roadmaps/generate] Generando ruta", { locale }); // diagnóstico: idioma pedido a la IA
+  const result = await generateRoadmap(topic, locale);
   if (!result.ok) return error(FAILURE_MESSAGES[result.reason]);
 
   const nodes = normalizeNodes(result.roadmap.nodes);
   const { title, theme } = result.roadmap;
-  const id = await saveRoadmap(supabase, { topic, title, theme, nodes });
-  if (!id) return error("Generamos la ruta pero no pudimos guardarla. Intentá de nuevo.");
+  const id = await saveRoadmap(supabase, { topic, title, theme, language: locale, nodes });
+  if (!id) return error("saveFailed");
 
   // redirect lanza una excepción interna de Next: debe ir fuera de cualquier try/catch.
-  redirect(`${ROUTES.roadmaps}/${id}`);
+  redirect(localizePath(locale, `${ROUTES.roadmaps}/${id}`));
 }
