@@ -9,8 +9,7 @@ import { TopicReveal } from "./topic-reveal";
 
 /**
  * El CTA siempre apunta a /signup: con sesión activa, el proxy ya redirige al dashboard.
- * Layout: el texto queda fijo arriba; el campo de tema y los botones se alinean con el borde inferior
- * de la tarjeta (la columna estira a la altura de la fila y los botones llevan `mt-auto`).
+ * Layout: la columna de texto no cambia nunca; al abrir el mapa solo se estira la tarjeta.
  */
 export async function Hero() {
   const t = (await getDictionary()).landing.hero;
@@ -18,13 +17,13 @@ export async function Hero() {
   return (
     <HeroDemoProvider>
       <section data-snap-section className="mx-auto grid w-full max-w-page gap-12 px-6 py-section md:grid-cols-2 md:gap-16">
-        <div className="flex animate-fade-up flex-col">
+        <div className="animate-fade-up">
           <p className="mb-4 font-display text-xs font-medium uppercase tracking-[0.6px] text-accent">{t.eyebrow}</p>
           <h1 className="font-display text-hero font-medium text-foreground">{t.title}</h1>
           <p className="mt-6 max-w-[72ch] text-lg text-muted-foreground">{t.body}</p>
-          <div className="mt-auto pt-8">
-            {/* En celular el campo aparece dentro de la tarjeta (ver PreviewFooter). */}
-            <TopicReveal className="hidden max-w-lg md:grid" innerClassName="pb-5" />
+          <div className="mt-8">
+            {/* Espacio reservado en escritorio: el campo aparece sin mover los botones. En celular va en la tarjeta (PreviewFooter). */}
+            <TopicReveal className="mb-5 hidden max-w-lg md:block" />
             <div className="flex flex-wrap gap-4">
               <Link href={localizePath(locale, ROUTES.signup)} className={buttonStyles("primary")}>
                 {t.primaryCta}
