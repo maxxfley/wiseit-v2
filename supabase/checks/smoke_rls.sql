@@ -16,6 +16,7 @@ declare
   user_a constant uuid := '11111111-1111-4111-8111-111111111111';
   user_b constant uuid := '22222222-2222-4222-8222-222222222222';
   rid uuid;
+  rid_lang uuid; -- ruta del caso de idioma: no pisa `rid`, que usan los pasos de progreso
   n int;
 begin
   -- 1. El trigger creó ambos perfiles.
@@ -122,9 +123,9 @@ begin
   if n <> 1 then raise exception 'FALLO grafo: el tema o el idioma por defecto no se guardó'; end if;
 
   -- 8b. Idioma explícito (Paso 8): la ruta queda marcada con el idioma pedido.
-  rid := public.create_roadmap_with_nodes('Ruso', 'Ruta Ruso', null,
+  rid_lang := public.create_roadmap_with_nodes('Ruso', 'Ruta Ruso', null,
     '[{"title":"n0","description":"d","difficulty":"Básico","order_index":0,"requires":[]}]'::jsonb, 'ru');
-  select count(*) into n from public.roadmaps where id = rid and language = 'ru';
+  select count(*) into n from public.roadmaps where id = rid_lang and language = 'ru';
   if n <> 1 then raise exception 'FALLO idioma: no se guardó language = ru'; end if;
 
   -- 9. Prerrequisito inexistente o auto-referencia: se rechaza sin dejar nada a medias.
