@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { ROUTES } from "@/config/routes";
+import { localizedActionPath } from "@/lib/i18n/action-locale";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { confirmParamsSchema } from "../schemas/auth.schema";
 import type { AuthFormState } from "../types";
@@ -16,7 +17,7 @@ export async function confirmEmailAction(_prev: AuthFormState, formData: FormDat
     token_hash: formData.get("token_hash"),
     type: formData.get("type"),
   });
-  if (!parsed.success) return formError("El link de confirmación no es válido.");
+  if (!parsed.success) return formError("confirmInvalid");
 
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.verifyOtp({
@@ -26,8 +27,8 @@ export async function confirmEmailAction(_prev: AuthFormState, formData: FormDat
 
   if (error) {
     console.error("[auth/confirm] Fallo al verificar el token", { code: error.code, status: error.status, message: error.message });
-    return formError("El link expiró o ya fue usado. Registrate de nuevo para recibir otro.");
+    return formError("confirmExpired");
   }
 
-  redirect(ROUTES.dashboard);
+  redirect(await localizedActionPath(ROUTES.dashboard));
 }

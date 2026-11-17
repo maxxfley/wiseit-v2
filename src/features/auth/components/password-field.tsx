@@ -2,6 +2,7 @@
 
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n/provider";
 import { FormField } from "./form-field";
 
 interface PasswordFieldProps {
@@ -13,6 +14,7 @@ interface PasswordFieldProps {
 
 /** Campo de contraseña con botón mostrar/ocultar (evita errores de tipeo al crear la cuenta). */
 export function PasswordField({ name, label, autoComplete, errors }: PasswordFieldProps) {
+  const { t } = useI18n();
   const [visible, setVisible] = useState(false);
   const Icon = visible ? EyeOff : Eye;
 
@@ -28,7 +30,7 @@ export function PasswordField({ name, label, autoComplete, errors }: PasswordFie
         <button
           type="button"
           onClick={() => setVisible((value) => !value)}
-          aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
+          aria-label={visible ? t.auth.fields.hidePassword : t.auth.fields.showPassword}
           aria-pressed={visible}
           className="rounded-xs p-1 text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
         >

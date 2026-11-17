@@ -1,4 +1,7 @@
+"use client"; // Lee los textos desde el contexto de idioma.
+
 import { Check } from "lucide-react";
+import { useI18n } from "@/lib/i18n/provider";
 import { cn } from "@/utils/cn";
 
 interface ConceptChecklistProps {
@@ -10,8 +13,9 @@ interface ConceptChecklistProps {
 
 /** Conceptos clave del nodo como checklist: tildarlos todos completa el nodo. */
 export function ConceptChecklist({ concepts, completed, disabled, onToggle }: ConceptChecklistProps) {
+  const { t } = useI18n();
   if (concepts.length === 0) {
-    return <p className="text-sm text-muted-foreground">Este tema no tiene conceptos clave cargados.</p>;
+    return <p className="text-sm text-muted-foreground">{t.map.noConcepts}</p>;
   }
   return (
     <ul className="space-y-1.5">

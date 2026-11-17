@@ -1,6 +1,8 @@
 "use client"; // Componente de nodo de React Flow (vive dentro del lienzo, solo en el cliente).
 
 import { Handle, Position, type NodeProps } from "@xyflow/react";
+import { format } from "@/lib/i18n/format";
+import { useI18n } from "@/lib/i18n/provider";
 import { cn } from "@/utils/cn";
 import type { ConceptFlowNode } from "./map-flow";
 import { NODE_HEIGHT, NODE_WIDTH } from "./map-layout";
@@ -14,6 +16,7 @@ const HANDLE = "!pointer-events-none !size-1 !min-h-0 !min-w-0 !border-0 !bg-tra
 /** Tarjeta del nodo. Es un <button>: se enfoca con Tab y se abre con Enter/Espacio. */
 export function MapNodeCard({ data }: NodeProps<ConceptFlowNode>) {
   const { node, status, percent, selected, onSelect } = data;
+  const { t } = useI18n();
   return (
     <>
       <Handle type="target" position={Position.Top} isConnectable={false} className={HANDLE} />
@@ -21,7 +24,7 @@ export function MapNodeCard({ data }: NodeProps<ConceptFlowNode>) {
         type="button"
         onClick={() => onSelect(node.id)}
         aria-pressed={selected}
-        aria-label={`${node.title}. ${STATUS_META[status].label}, ${percent}%`}
+        aria-label={format(t.map.nodeAria, { title: node.title, status: t.map.status[status], percent })}
         style={{ width: NODE_WIDTH, minHeight: NODE_HEIGHT }}
         className={cn(
           "flex items-center gap-3 rounded-xl border bg-surface/90 px-3.5 py-3 text-left backdrop-blur-sm",
@@ -38,7 +41,7 @@ export function MapNodeCard({ data }: NodeProps<ConceptFlowNode>) {
           <span className="line-clamp-2 block text-sm font-medium leading-snug text-foreground">{node.title}</span>
           <StatusBadge status={status} />
         </span>
-        {status === "in_progress" ? <ProgressRing percent={percent} size={26} /> : null}
+        {status === "in_progress" ? <ProgressRing percent={percent} size={26} label={format(t.map.percentDone, { percent })} /> : null}
       </button>
       <Handle type="source" position={Position.Bottom} isConnectable={false} className={HANDLE} />
     </>
