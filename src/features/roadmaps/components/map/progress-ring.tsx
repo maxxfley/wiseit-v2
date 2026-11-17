@@ -9,10 +9,20 @@ interface ProgressRingProps {
   /** Texto accesible ya traducido (ej. "40% completado"). */
   label: string;
   className?: string;
+  /** Duración de la animación del arco (por defecto 500 ms). La landing la sincroniza con su timeline. */
+  durationClassName?: string;
 }
 
 /** Anillo de progreso en SVG. El valor también se expone como texto accesible. */
-export function ProgressRing({ percent, size = 32, stroke = 3, tone = "text-info", label, className }: ProgressRingProps) {
+export function ProgressRing({
+  percent,
+  size = 32,
+  stroke = 3,
+  tone = "text-info",
+  label,
+  className,
+  durationClassName = "duration-500",
+}: ProgressRingProps) {
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
   const clamped = Math.min(100, Math.max(0, percent));
@@ -35,7 +45,7 @@ export function ProgressRing({ percent, size = 32, stroke = 3, tone = "text-info
           stroke="currentColor"
           strokeDasharray={circumference}
           strokeDashoffset={circumference * (1 - clamped / 100)}
-          className={cn("transition-[stroke-dashoffset] duration-500 ease-out", tone)}
+          className={cn("transition-[stroke-dashoffset] ease-out", durationClassName, tone)}
         />
       </svg>
     </span>
