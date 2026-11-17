@@ -1,10 +1,11 @@
-"use client"; // Solo guarda qué pestaña de la demo está activa.
+"use client"; // Alterna la pestaña de la demo y anima el alto del panel.
 
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { MapPreview, type PreviewNode } from "@/features/roadmaps/components/map/map-preview";
-import { ViewTabs, type RoadmapView } from "@/features/roadmaps/components/view-tabs";
+import { ViewTabs } from "@/features/roadmaps/components/view-tabs";
 import { useI18n } from "@/lib/i18n/provider";
 import { useAnimatedHeight } from "../hooks/use-animated-height";
+import { useHeroDemo } from "./hero-demo-context";
 
 /** Íconos y estados de la ruta de muestra: un tema completado, uno en proceso y uno bloqueado. */
 const DEMO_NODES: readonly Omit<PreviewNode, "title">[] = [
@@ -24,7 +25,7 @@ interface LandingRoadmapDemoProps {
 /** Demo de la landing: el mismo selector Lista / Mapa que tienen las rutas reales, con un mapa de muestra. */
 export function LandingRoadmapDemo({ list }: LandingRoadmapDemoProps) {
   const { t } = useI18n();
-  const [view, setView] = useState<RoadmapView>("list");
+  const { view, setView } = useHeroDemo(); // Compartido con la columna de texto (campo de tema).
   const { ref, height } = useAnimatedHeight<HTMLDivElement>();
   // El nodo en proceso se muestra desplegado: sus conceptos explican el porcentaje del anillo.
   const concepts = t.landing.preview.concepts.map((label, index) => ({ label, done: index < DEMO_CONCEPTS_DONE }));

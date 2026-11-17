@@ -12,6 +12,7 @@ import { generateRoadmap, type GenerationFailure } from "../services/generate-ro
 import { normalizeNodes } from "../services/normalize-nodes";
 import { reserveGeneration } from "../services/quota";
 import { saveRoadmap } from "../services/save-roadmap";
+import { clearTopicDraft } from "../services/topic-draft";
 import type { GenerateFormState } from "../types";
 
 const FAILURE_MESSAGES: Record<GenerationFailure, MessageKey> = {
@@ -51,6 +52,7 @@ export async function generateRoadmapAction(
   const { title, theme } = result.roadmap;
   const id = await saveRoadmap(supabase, { topic, title, theme, language: locale, nodes });
   if (!id) return error("saveFailed");
+  await clearTopicDraft(); // El tema escrito en la landing (si había) ya se usó.
 
   // redirect lanza una excepción interna de Next: debe ir fuera de cualquier try/catch.
   redirect(localizePath(locale, `${ROUTES.roadmaps}/${id}`));

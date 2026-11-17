@@ -6,6 +6,7 @@ export const roadmaps: Dictionary["roadmaps"] = {
     createHeading: "Создать маршрут",
     topicLabel: "Что вы хотите изучить?",
     topicPlaceholder: "Например: PostgreSQL, теория музыки, фотография…",
+    draftHint: "Это тема, которую вы написали на главной странице. Её можно изменить перед генерацией.",
     generate: "Создать маршрут",
     generating: "Создаём ваш маршрут…",
     remaining: "Сегодня осталось попыток: {remaining} из {limit}.",
