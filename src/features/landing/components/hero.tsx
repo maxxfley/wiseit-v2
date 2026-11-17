@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { buttonStyles } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
-import { RoadmapPreview } from "@/features/roadmaps/components/roadmap-preview";
 import { localizePath } from "@/lib/i18n/paths";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
+import { RoadmapPreview } from "./roadmap-preview";
 
 /** El CTA siempre apunta a /signup: con sesión activa, el proxy ya redirige al dashboard. */
 export async function Hero() {
