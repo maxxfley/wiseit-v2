@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useState, type ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { RoadmapTheme } from "@/config/roadmap-visuals";
+import { useI18n } from "@/lib/i18n/provider";
 import { cn } from "@/utils/cn";
 import type { RoadmapNodeView } from "../utils/node-status";
 
@@ -18,7 +19,6 @@ type View = "map" | "list";
 
 interface Tab {
   value: View;
-  label: string;
   icon: LucideIcon;
   /** Clases según esté activa o no. El Mapa usa el acento morado para invitar a explorarlo. */
   active: string;
@@ -28,14 +28,12 @@ interface Tab {
 const TABS: Tab[] = [
   {
     value: "list",
-    label: "Lista",
     icon: List,
     active: "bg-surface-raised text-foreground",
     idle: "text-muted-foreground hover:text-foreground",
   },
   {
     value: "map",
-    label: "Mapa interactivo",
     icon: MapIcon,
     active: "bg-primary text-primary-foreground shadow-glow",
     idle: "bg-primary/15 text-accent hover:bg-primary hover:text-primary-foreground hover:shadow-glow",
@@ -51,11 +49,12 @@ interface RoadmapViewsProps {
 }
 
 export function RoadmapViews({ roadmapId, theme, nodes, list }: RoadmapViewsProps) {
+  const { t } = useI18n();
   const [view, setView] = useState<View>("list"); // La lista es la vista inicial; el mapa se carga al pedirlo.
 
   return (
     <div className="space-y-4">
-      <div role="tablist" aria-label="Vista de la ruta" className="inline-flex gap-1 rounded-md border border-border bg-surface p-1">
+      <div role="tablist" aria-label={t.roadmaps.views.label} className="inline-flex gap-1 rounded-md border border-border bg-surface p-1">
         {TABS.map((tab) => (
           <button
             key={tab.value}
@@ -71,7 +70,7 @@ export function RoadmapViews({ roadmapId, theme, nodes, list }: RoadmapViewsProp
             )}
           >
             <tab.icon aria-hidden="true" className="size-4" />
-            {tab.label}
+            {t.roadmaps.views[tab.value]}
           </button>
         ))}
       </div>

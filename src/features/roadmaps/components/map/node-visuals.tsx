@@ -22,7 +22,6 @@ export function NodeIconView({ icon, className }: { icon: NodeIcon; className?: 
 }
 
 interface StatusMeta {
-  label: string;
   icon: LucideIcon;
   /** Borde + resplandor de la tarjeta del nodo. */
   card: string;
@@ -30,28 +29,24 @@ interface StatusMeta {
   badge: string;
 }
 
-/** El estado se comunica con color, ícono y texto: nunca solo con color. */
+/** El estado se comunica con color, ícono y texto (el texto sale del diccionario: `map.status`). */
 export const STATUS_META: Record<NodeStatus, StatusMeta> = {
   completed: {
-    label: "Completado",
     icon: Check,
     card: "border-success/70 shadow-[0_0_28px_-10px_var(--success)]",
     badge: "bg-success/15 text-success",
   },
   in_progress: {
-    label: "En proceso",
     icon: CircleDot,
     card: "border-info/80 shadow-[0_0_28px_-8px_var(--info)]",
     badge: "bg-info/15 text-info",
   },
   available: {
-    label: "Disponible",
     icon: Circle,
     card: "border-border-strong hover:border-muted-foreground",
     badge: "border border-border-strong text-muted-foreground",
   },
   locked: {
-    label: "Bloqueado",
     icon: Lock,
     card: "border-border opacity-70",
     badge: "bg-surface-raised text-subtle",

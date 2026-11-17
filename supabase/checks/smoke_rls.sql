@@ -118,8 +118,14 @@ begin
       {"title":"n2","description":"d","difficulty":"Intermedio","order_index":2,"requires":[0,1]}]'::jsonb);
   select count(*) into n from public.node_edges where roadmap_id = rid;
   if n <> 3 then raise exception 'FALLO grafo: % aristas (esperado 3)', n; end if;
-  select count(*) into n from public.roadmaps where id = rid and theme = 'cosmos';
-  if n <> 1 then raise exception 'FALLO grafo: el tema no se guardó'; end if;
+  select count(*) into n from public.roadmaps where id = rid and theme = 'cosmos' and language = 'es';
+  if n <> 1 then raise exception 'FALLO grafo: el tema o el idioma por defecto no se guardó'; end if;
+
+  -- 8b. Idioma explícito (Paso 8): la ruta queda marcada con el idioma pedido.
+  rid := public.create_roadmap_with_nodes('Ruso', 'Ruta Ruso', null,
+    '[{"title":"n0","description":"d","difficulty":"Básico","order_index":0,"requires":[]}]'::jsonb, 'ru');
+  select count(*) into n from public.roadmaps where id = rid and language = 'ru';
+  if n <> 1 then raise exception 'FALLO idioma: no se guardó language = ru'; end if;
 
   -- 9. Prerrequisito inexistente o auto-referencia: se rechaza sin dejar nada a medias.
   begin

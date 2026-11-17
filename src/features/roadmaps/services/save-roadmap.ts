@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { RoadmapTheme } from "@/config/roadmap-visuals";
+import type { Locale } from "@/lib/i18n/config";
 import type { Database } from "@/types/database.types";
 import type { OrderedNode } from "./normalize-nodes";
 
@@ -8,6 +9,8 @@ interface RoadmapToSave {
   topic: string;
   title: string;
   theme: RoadmapTheme;
+  /** Idioma en que la IA escribió el contenido. */
+  language: Locale;
   nodes: readonly OrderedNode[];
 }
 
@@ -20,6 +23,7 @@ export async function saveRoadmap(supabase: SupabaseClient<Database>, roadmap: R
     p_topic: roadmap.topic,
     p_title: roadmap.title,
     p_theme: roadmap.theme,
+    p_language: roadmap.language,
     p_nodes: roadmap.nodes.map((node) => ({
       title: node.title,
       description: node.description,
