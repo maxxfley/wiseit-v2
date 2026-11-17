@@ -2,12 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { ROUTES } from "@/config/routes";
+import { localizedActionPath } from "@/lib/i18n/action-locale";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { recoveryParamsSchema, resetPasswordSchema } from "../schemas/auth.schema";
 import type { AuthFormState } from "../types";
 import { formError, validationError } from "./form-state";
-
-const EXPIRED = "El link expiró o ya fue usado. Pedí uno nuevo.";
 
 /**
  * Valida las contraseñas ANTES de consumir el token (que es de un solo uso), y recién entonces
@@ -19,7 +18,7 @@ export async function resetPasswordAction(_prev: AuthFormState, formData: FormDa
     token_hash: formData.get("token_hash"),
     type: formData.get("type"),
   });
-  if (!params.success) return formError("El link de recuperación no es válido.");
+  if (!params.success) return formError("recoveryInvalid");
 
   const passwords = resetPasswordSchema.safeParse({
     password: formData.get("password"),
@@ -31,7 +30,7 @@ export async function resetPasswordAction(_prev: AuthFormState, formData: FormDa
   const verified = await supabase.auth.verifyOtp({ token_hash: params.data.token_hash, type: params.data.type });
   if (verified.error) {
     console.error("[auth/reset] Fallo al verificar el token", { code: verified.error.code, status: verified.error.status, message: verified.error.message });
-    return formError(EXPIRED);
+    return formError("recoveryExpired");
   }
 
   const { error } = await supabase.auth.updateUser({ password: passwords.data.password });
@@ -39,9 +38,9 @@ export async function resetPasswordAction(_prev: AuthFormState, formData: FormDa
     console.error("[auth/reset] Fallo al actualizar la contraseña", { code: error.code, status: error.status, message: error.message });
     // El token ya se consumió: se cierra la sesión de recuperación y se pide un link nuevo.
     await supabase.auth.signOut();
-    if (error.code === "same_password") return formError("Elegí una contraseña distinta a la anterior. Pedí un link nuevo.");
-    return formError("No pudimos guardar la contraseña. Pedí un link nuevo.");
+    if (error.code === "same_password") return formError("samePassword");
+    return formError("passwordSaveFailed");
   }
 
-  redirect(ROUTES.dashboard);
+  redirect(await localizedActionPath(ROUTES.dashboard));
 }

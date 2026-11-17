@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { localizedActionPath } from "@/lib/i18n/action-locale";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { safeRedirect } from "@/utils/safe-redirect";
 import { loginSchema } from "../schemas/auth.schema";
@@ -19,10 +20,11 @@ export async function loginAction(_prev: AuthFormState, formData: FormData): Pro
 
   if (error) {
     console.error("[auth/login] Fallo de inicio de sesión", { code: error.code, status: error.status, message: error.message });
-    if (error.code === "email_not_confirmed") return formError("Confirmá tu email antes de ingresar.");
-    if (error.code === "over_request_rate_limit") return formError("Demasiados intentos. Esperá un momento.");
-    return formError("Credenciales inválidas.");
+    if (error.code === "email_not_confirmed") return formError("emailNotConfirmed");
+    if (error.code === "over_request_rate_limit") return formError("rateLimited");
+    return formError("invalidCredentials");
   }
 
-  redirect(safeRedirect(formData.get("next")));
+  // `next` llega sin idioma (lo quita el proxy); se antepone el de la request.
+  redirect(await localizedActionPath(safeRedirect(formData.get("next"))));
 }

@@ -1,0 +1,56 @@
+import type { Dictionary } from "../types";
+
+export const auth: Dictionary["auth"] = {
+  fields: {
+    email: "Эл. почта",
+    password: "Пароль",
+    newPassword: "Новый пароль",
+    confirmPassword: "Повторите пароль",
+    showPassword: "Показать пароль",
+    hidePassword: "Скрыть пароль",
+    forgot: "Забыли пароль?",
+  },
+  login: {
+    title: "Вход",
+    description: "Войдите в аккаунт, чтобы увидеть свои маршруты.",
+    footerText: "Нет аккаунта?",
+    footerLink: "Зарегистрироваться",
+    submit: "Войти",
+    pending: "Входим…",
+  },
+  signup: {
+    title: "Регистрация",
+    description: "Начните создавать свои учебные маршруты.",
+    footerText: "Уже есть аккаунт?",
+    footerLink: "Войти",
+    submit: "Создать аккаунт",
+    pending: "Создаём аккаунт…",
+  },
+  forgot: {
+    title: "Восстановление пароля",
+    description: "Укажите свою почту, и мы пришлём ссылку для создания нового пароля.",
+    footerText: "Вспомнили?",
+    footerLink: "Войти",
+    submit: "Отправить ссылку",
+    pending: "Отправляем…",
+  },
+  reset: {
+    title: "Новый пароль",
+    description: "Придумайте новый пароль для своего аккаунта.",
+    footerText: "Вернуться?",
+    footerLink: "Войти",
+    submit: "Сохранить пароль",
+    pending: "Сохраняем…",
+    invalidLink: "Ссылка для восстановления недействительна.",
+    requestNew: "Запросить новую ссылку",
+  },
+  confirm: {
+    metaTitle: "Подтверждение почты",
+    title: "Подтвердите почту",
+    description: "Последний шаг, чтобы активировать аккаунт Wiseit.",
+    submit: "Подтвердить почту",
+    pending: "Подтверждаем…",
+    invalidLink: "Ссылка для подтверждения недействительна.",
+    signup: "Зарегистрироваться",
+  },
+};

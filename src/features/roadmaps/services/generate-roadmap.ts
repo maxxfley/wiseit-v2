@@ -3,8 +3,9 @@ import Groq from "groq-sdk";
 import { AI_LIMITS } from "@/config/ai";
 import { getAiEnv } from "@/lib/ai/env";
 import { getGroqClient } from "@/lib/ai/groq";
+import type { Locale } from "@/lib/i18n/config";
 import { roadmapJsonSchema, roadmapOutputSchema, type RoadmapOutput } from "../schemas/roadmap-output.schema";
-import { SYSTEM_PROMPT, buildUserMessage } from "./prompt";
+import { buildSystemPrompt, buildUserMessage } from "./prompt";
 
 export type GenerationFailure = "rate_limited" | "unavailable" | "invalid_output";
 
@@ -22,12 +23,12 @@ function classifyError(error: unknown): GenerationFailure {
 }
 
 /** Un intento: pide la ruta a Groq con Structured Outputs estricto y la valida con Zod. */
-async function requestRoadmap(topic: string, attempt: number): Promise<GenerationResult> {
+async function requestRoadmap(topic: string, locale: Locale, attempt: number): Promise<GenerationResult> {
   try {
     const completion = await getGroqClient().chat.completions.create({
       model: getAiEnv().GROQ_MODEL,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: buildSystemPrompt(locale) },
         { role: "user", content: buildUserMessage(topic) },
       ],
       response_format: {
@@ -60,11 +61,11 @@ async function requestRoadmap(topic: string, attempt: number): Promise<Generatio
  * dentro de la MISMA reserva de cupo: el usuario no paga por un error del modelo. Los errores
  * de red o de límite no se reintentan aquí (el cliente de Groq ya tiene sus propios reintentos).
  */
-export async function generateRoadmap(topic: string): Promise<GenerationResult> {
-  let result = await requestRoadmap(topic, 1);
+export async function generateRoadmap(topic: string, locale: Locale): Promise<GenerationResult> {
+  let result = await requestRoadmap(topic, locale, 1);
   for (let retry = 1; retry <= AI_LIMITS.invalidOutputRetries; retry++) {
     if (result.ok || result.reason !== "invalid_output") break;
-    result = await requestRoadmap(topic, retry + 1);
+    result = await requestRoadmap(topic, locale, retry + 1);
   }
   return result;
 }

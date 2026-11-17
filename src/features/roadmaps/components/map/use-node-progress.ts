@@ -1,6 +1,7 @@
 "use client"; // Hooks de estado optimista: solo en el cliente.
 
 import { useCallback, useOptimistic, useState, useTransition } from "react";
+import type { MessageKey } from "@/locales/types";
 import { updateNodeProgressAction } from "../../actions/update-node-progress";
 import { applyProgress, type RoadmapNodeView } from "../../utils/node-status";
 
@@ -24,7 +25,7 @@ function reducer(nodes: RoadmapNodeView[], update: ProgressUpdate): RoadmapNodeV
  */
 export function useNodeProgress(roadmapId: string, serverNodes: RoadmapNodeView[]) {
   const [nodes, applyOptimistic] = useOptimistic(serverNodes, reducer);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<MessageKey | null>(null); // clave: la traduce quien la muestra
   const [pending, startTransition] = useTransition();
 
   const update = (nodeId: string, completedConcepts: number[], markComplete: boolean) => {

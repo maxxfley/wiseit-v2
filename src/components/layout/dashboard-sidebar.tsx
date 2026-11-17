@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LocaleSwitcher } from "./locale-switcher";
 import { Logo } from "./logo";
 import { SidebarNav } from "./sidebar-nav";
 import { SidebarUser } from "./sidebar-user";
@@ -19,7 +20,10 @@ export function DashboardSidebar() {
       <Suspense fallback={<Skeleton className="h-9 w-40 md:h-20 md:w-full" />}>
         <SidebarNav />
       </Suspense>
-      <div className="ml-auto md:ml-0 md:mt-auto">
+      <div className="ml-auto flex items-center gap-3 md:ml-0 md:mt-auto md:flex-col md:items-stretch">
+        <Suspense fallback={<Skeleton className="h-6 w-24" />}>
+          <LocaleSwitcher />
+        </Suspense>
         <Suspense fallback={<Skeleton className="h-10 w-20 md:h-24 md:w-full" />}>
           <SidebarUser />
         </Suspense>
