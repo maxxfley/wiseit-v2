@@ -7,10 +7,13 @@ export const landing: Dictionary["landing"] = {
     body: "Write what you want to master and Wiseit builds a step-by-step journey, ordered from Basic to Advanced, so you always know what to study next.",
     primaryCta: "Create my first path",
     secondaryCta: "I already have an account",
+    topicLabel: "Topic you want to learn",
+    topicPlaceholder: "Create yours: what do you want to learn?",
   },
   preview: {
     label: "Path · PostgreSQL",
     steps: ["What a relational database is", "Joins, indexes and normalization", "Query plans and partitioning"],
+    concepts: ["JOIN types (INNER, LEFT, RIGHT)", "B-tree indexes and when to use them", "Normal forms (1NF, 2NF, 3NF)"],
     mapAria: "Sample interactive map: three connected PostgreSQL topics",
     cta: "Create yours",
   },
