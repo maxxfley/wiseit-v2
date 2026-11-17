@@ -56,7 +56,7 @@ export function ViewTabs({ value, onChange, className }: ViewTabsProps) {
           aria-selected={value === tab.value}
           onClick={() => onChange(tab.value)}
           className={cn(
-            "inline-flex items-center gap-2 rounded-sm px-4 py-1.5 text-sm font-medium",
+            "inline-flex cursor-pointer items-center gap-2 rounded-sm px-4 py-1.5 text-sm font-medium",
             "transition-[background-color,color,box-shadow] duration-200",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
             value === tab.value ? tab.active : tab.idle,
