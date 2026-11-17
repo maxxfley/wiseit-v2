@@ -25,7 +25,11 @@ const TABS: Tab[] = [
     value: "map",
     icon: MapIcon,
     active: "bg-primary text-primary-foreground shadow-glow",
-    idle: "bg-primary/15 text-accent hover:bg-primary hover:text-primary-foreground hover:shadow-glow",
+    // Sin seleccionar "titila" (luciérnaga); en hover el glow queda fijo. Con "reducir movimiento" no se anima.
+    idle: cn(
+      "bg-primary/15 text-accent animate-firefly motion-reduce:animate-none",
+      "hover:animate-none hover:bg-primary hover:text-primary-foreground hover:shadow-glow",
+    ),
   },
 ];
 
