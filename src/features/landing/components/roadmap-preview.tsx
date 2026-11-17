@@ -1,16 +1,12 @@
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { ROUTES } from "@/config/routes";
 import { DIFFICULTY_LEVELS } from "@/features/roadmaps/schemas/roadmap-output.schema";
-import { localizePath } from "@/lib/i18n/paths";
-import { getDictionary, getLocale } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n/server";
 import { LandingRoadmapDemo } from "./landing-roadmap-demo";
+import { PreviewFooter } from "./preview-footer";
 
 /** Vista previa de un roadmap para la landing: contenido estático de demostración, un paso por nivel. */
 export async function RoadmapPreview() {
   const t = await getDictionary();
-  const locale = await getLocale();
   const steps = DIFFICULTY_LEVELS.map((level, index) => ({
     level: t.common.levels[level],
     title: t.landing.preview.steps[index] ?? "",
@@ -34,13 +30,7 @@ export async function RoadmapPreview() {
         {t.landing.preview.label}
       </p>
       <LandingRoadmapDemo list={list} />
-      <Link
-        href={localizePath(locale, ROUTES.signup)}
-        className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:text-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-      >
-        {t.landing.preview.cta}
-        <ArrowRight aria-hidden="true" className="size-4" />
-      </Link>
+      <PreviewFooter />
     </Card>
   );
 }
