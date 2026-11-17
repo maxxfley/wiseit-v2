@@ -13,6 +13,8 @@ export const common: Dictionary["common"] = {
     signup: "Регистрация",
     logout: "Выйти",
     userFallback: "Пользователь",
+    openMenu: "Открыть меню",
+    closeMenu: "Закрыть меню",
   },
   language: { label: "Язык" },
   footer: { tagline: "Учебные маршруты с ИИ — от базового уровня до продвинутого." },
