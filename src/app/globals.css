@@ -141,6 +141,15 @@ body {
 }
 
 /*
+ * Selección de texto con el acento de la paleta (como Supabase con su verde): morado translúcido
+ * y sutil; el texto pasa a --text-primary para que siga legible sobre el fondo morado.
+ */
+::selection {
+  background-color: color-mix(in oklab, var(--primary) 45%, transparent);
+  color: var(--text-primary);
+}
+
+/*
  * Scroll suave general. En punteros finos (mouse/trackpad) el desplazamiento por secciones lo
  * anima <SectionScroller> con JS (src/features/landing/components/section-scroller.tsx);
  * en táctiles NO hay imantado (scroll nativo libre: el snap forzaba el scroll al llegar al tope
