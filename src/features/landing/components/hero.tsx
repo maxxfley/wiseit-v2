@@ -9,7 +9,8 @@ import { TopicReveal } from "./topic-reveal";
 
 /**
  * El CTA siempre apunta a /signup: con sesión activa, el proxy ya redirige al dashboard.
- * Layout: la columna de texto no cambia nunca; al abrir el mapa solo se estira la tarjeta.
+ * Layout: el texto queda fijo; al abrir el mapa se estira la tarjeta y, a la izquierda, se despliega el
+ * campo de tema empujando los botones lo justo.
  */
 export async function Hero() {
   const t = (await getDictionary()).landing.hero;
@@ -22,8 +23,13 @@ export async function Hero() {
           <h1 className="font-display text-hero font-medium text-foreground">{t.title}</h1>
           <p className="mt-6 max-w-[72ch] text-lg text-muted-foreground">{t.body}</p>
           <div className="mt-8">
-            {/* Espacio reservado en escritorio: el campo aparece sin mover los botones. En celular va en la tarjeta (PreviewFooter). */}
-            <TopicReveal className="mb-5 hidden max-w-lg md:block" />
+            {/*
+              Escritorio: al abrir el mapa el campo se despliega y los botones bajan lo justo (no hasta el
+              borde de la tarjeta). Separación de 20 px arriba (-mt-3 sobre los 32 del contenedor) y abajo
+              (pb-6 menos los 4 px del -m-1 interno).
+              En celular el campo va dentro de la tarjeta (PreviewFooter).
+            */}
+            <TopicReveal className="hidden max-w-lg md:grid" revealedClassName="-mt-3" innerClassName="pb-6" />
             <div className="flex flex-wrap gap-4">
               <Link href={localizePath(locale, ROUTES.signup)} className={buttonStyles("primary")}>
                 {t.primaryCta}
