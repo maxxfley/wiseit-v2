@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PlanActivationNotice } from "@/features/plans/components/plan-activation-notice";
 import { GenerateFormWithDraft } from "@/features/roadmaps/components/generate-form-with-draft";
 import { RecentRoadmaps } from "@/features/roadmaps/components/recent-roadmaps";
 import { RemainingAttempts } from "@/features/roadmaps/components/remaining-attempts";
@@ -21,11 +22,15 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export const maxDuration = 300;
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: PageProps<"/[lang]/dashboard">) {
   const t = (await getDictionary()).roadmaps.dashboard;
   return (
     <div className="mx-auto w-full max-w-4xl space-y-12">
       <h1 className="font-display text-4xl font-medium tracking-[-0.8px] text-foreground">{t.title}</h1>
+      {/* `searchParams` es dato de runtime: con `cacheComponents` se lee dentro de <Suspense>. */}
+      <Suspense fallback={null}>
+        <PlanActivationNotice searchParams={searchParams} />
+      </Suspense>
       <section aria-labelledby="crear-ruta" className="space-y-4">
         <h2 id="crear-ruta" className="font-display text-2xl font-medium tracking-[-0.5px] text-foreground">
           {t.createHeading}

@@ -33,6 +33,10 @@ export const messages: Dictionary["messages"] = {
   // Plans
   premiumRequired: "Saving progress is a Wiseit Premium feature.",
   roadmapLimit: "You've reached the free plan's saved path limit. Delete one to create another.",
+  // Payments
+  checkoutFailed: "We couldn't start the checkout. Please try again in a few minutes.",
+  alreadyPremium: "You already have an active Premium plan.",
+  portalFailed: "We couldn't open your subscription settings. Please try again.",
 };
 
 export const validation: Dictionary["validation"] = {

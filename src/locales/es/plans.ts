@@ -1,0 +1,54 @@
+/** Planes: página de precios, badge del sidebar y activación tras el pago (Paso 7b). */
+export const plans = {
+  metaTitle: "Planes",
+  eyebrow: "Planes",
+  title: "Aprendé a tu ritmo. Avanzá sin límites.",
+  subtitle: "Empezá gratis. Pasate a Premium cuando quieras seguir tu progreso y aprender más rápido.",
+  monthly: "Mensual",
+  yearly: "Anual",
+  yearlySave: "Ahorrás 25%",
+  perMonth: "/mes",
+  perYear: "/año",
+  yearlyEquivalent: "Equivale a {price}/mes",
+  free: {
+    name: "Gratis",
+    description: "Para descubrir Wiseit.",
+    features: [
+      "4 rutas generadas por día",
+      "Hasta 4 rutas guardadas",
+      "Mapa interactivo y vista de lista",
+      "Progreso en el primer tema de cada ruta",
+    ],
+  },
+  premium: {
+    name: "Premium",
+    description: "Para aprender en serio.",
+    badge: "Recomendado",
+    features: [
+      "10 rutas generadas por día, con un modelo de IA más potente",
+      "Rutas guardadas sin límite",
+      "Progreso en todos los temas: tildá, completá y desbloqueá",
+      "Próximamente: \"Buscar material\" y \"Avanzar más\"",
+    ],
+  },
+  cta: {
+    signup: "Crear cuenta gratis",
+    subscribe: "Pasar a Premium",
+    current: "Tu plan actual",
+    manage: "Gestionar suscripción",
+    loading: "Abriendo el pago…",
+  },
+  notes: {
+    taxes: "Precios en dólares, con impuestos incluidos. El pago lo procesa Paddle de forma segura.",
+    cancel: "Cancelás cuando quieras desde \"Gestionar suscripción\" y seguís con Premium hasta el fin del período pagado.",
+    sandbox: "Modo de prueba: usá la tarjeta 4242 4242 4242 4242, cualquier fecha futura y cualquier CVC.",
+    unavailable: "Los pagos no están disponibles en este momento.",
+  },
+  sidebar: { free: "Plan Gratis", premium: "Premium", upgrade: "Pasar a Premium" },
+  activation: {
+    pending: "¡Gracias! Estamos activando tu Premium. Puede tardar unos segundos…",
+    done: "¡Listo! Ya sos Premium. Disfrutalo.",
+    slow: "El pago se registró, pero la activación está tardando. Recargá la página en un minuto.",
+  },
+  upsell: "Ver Premium",
+};

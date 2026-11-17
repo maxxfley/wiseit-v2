@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SidebarPlan } from "@/features/plans/components/sidebar-plan";
 import { LocaleSwitcher } from "./locale-switcher";
 import { Logo } from "./logo";
 import { MobileMenu } from "./mobile-menu";
@@ -18,6 +19,11 @@ const user = (
     <SidebarUser />
   </Suspense>
 );
+const plan = (
+  <Suspense fallback={<Skeleton className="h-12 w-full" />}>
+    <SidebarPlan />
+  </Suspense>
+);
 const localeSwitcher = (
   <Suspense fallback={<Skeleton className="h-8 w-14" />}>
     <LocaleSwitcher />
@@ -31,7 +37,10 @@ function MobileTopBar() {
       <div className="justify-self-start">
         <MobileMenu header={<Logo />}>
           {nav}
-          <div className="mt-auto">{user}</div>
+          <div className="mt-auto space-y-4">
+            {plan}
+            {user}
+          </div>
         </MobileMenu>
       </div>
       <Logo />
@@ -50,6 +59,7 @@ export function DashboardSidebar() {
         {nav}
         <div className="mt-auto flex flex-col items-start gap-3">
           {localeSwitcher}
+          <div className="w-full">{plan}</div>
           <div className="w-full">{user}</div>
         </div>
       </aside>
