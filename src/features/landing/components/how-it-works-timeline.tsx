@@ -43,7 +43,7 @@ export function HowItWorksTimeline({ steps, generatingLabel, readyLabel }: HowIt
                   <span
                     style={{ transitionDuration: `${STEP_MS}ms` }}
                     className={cn(
-                      "absolute inset-0 origin-top bg-primary transition-transform ease-linear",
+                      "absolute inset-0 origin-top bg-accent shadow-[0_0_8px_var(--primary)] transition-transform ease-linear",
                       reached ? "scale-y-100" : "scale-y-0",
                     )}
                   />
@@ -54,7 +54,7 @@ export function HowItWorksTimeline({ steps, generatingLabel, readyLabel }: HowIt
                 className={cn(
                   "absolute -left-[37px] top-1.5 z-10 size-2.5 rounded-full transition-[background-color,box-shadow,transform] duration-500",
                   reached
-                    ? "scale-125 bg-primary shadow-[0_0_0_4px_color-mix(in_oklab,var(--primary)_25%,transparent),0_0_12px_var(--primary)]"
+                    ? "scale-125 bg-accent shadow-[0_0_0_4px_color-mix(in_oklab,var(--primary)_35%,transparent),0_0_16px_var(--primary)]"
                     : "bg-surface-raised ring-1 ring-border-strong",
                 )}
               />
