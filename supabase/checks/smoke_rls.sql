@@ -1,5 +1,6 @@
 -- Smoke test: trigger de profiles, aislamiento RLS, cuota, RPC de creación, grafo + progreso (Paso 6)
--- y planes (Paso 7a: Premium, cuotas por tipo, límite de rutas, bloqueo de progreso, past_due).
+-- y planes (Paso 7a: Premium, cuotas por tipo, límite de rutas, bloqueo de progreso, past_due;
+-- Paso 7b: eventos del webhook de Paddle).
 -- Todo ocurre dentro de una transacción que termina en ROLLBACK: no deja datos.
 -- Si algo falla, aborta con 'FALLO: ...'. Si todo pasa, devuelve 'OK'.
 
@@ -305,9 +306,51 @@ begin
   end;
 
   execute 'reset role';
+
+  -- 14. (Paso 7b) Webhook: apply_subscription_event (corre como el rol con privilegios, como el
+  -- service role). Aplica, descarta duplicados y eventos viejos, y no acepta usuarios inexistentes.
+  declare
+    r text;
+    t0 timestamptz := now();
+  begin
+    r := public.apply_subscription_event('evt_1', 'subscription.created', t0, user_b, 'ctm_1', 'sub_1',
+                                         'active', 'month', t0 + interval '30 days', false);
+    if r <> 'applied' then raise exception 'FALLO webhook: primer evento = %', r; end if;
+    r := public.apply_subscription_event('evt_1', 'subscription.created', t0, user_b, 'ctm_1', 'sub_1',
+                                         'active', 'month', t0 + interval '30 days', false);
+    if r <> 'duplicate' then raise exception 'FALLO webhook: duplicado = %', r; end if;
+    r := public.apply_subscription_event('evt_2', 'subscription.past_due', t0 + interval '1 hour', user_b, 'ctm_1', 'sub_1',
+                                         'past_due', 'month', t0 + interval '30 days', false);
+    if r <> 'applied' then raise exception 'FALLO webhook: past_due = %', r; end if;
+    r := public.apply_subscription_event('evt_3', 'subscription.updated', t0 - interval '1 hour', user_b, 'ctm_1', 'sub_1',
+                                         'active', 'month', t0 + interval '30 days', false);
+    if r <> 'stale' then raise exception 'FALLO webhook: evento viejo = %', r; end if;
+    r := public.apply_subscription_event('evt_4', 'subscription.created', t0, gen_random_uuid(), 'ctm_x', 'sub_x',
+                                         'active', 'month', null, false);
+    if r <> 'unknown_user' then raise exception 'FALLO webhook: usuario inexistente = %', r; end if;
+
+    -- El segundo aviso de cobro fallido NO reinicia los 10 días de gracia.
+    r := public.apply_subscription_event('evt_5', 'subscription.past_due', t0 + interval '2 days', user_b, 'ctm_1', 'sub_1',
+                                         'past_due', 'month', t0 + interval '30 days', false);
+    select count(*) into n from public.subscriptions
+    where user_id = user_b and status = 'past_due' and past_due_since = t0 + interval '1 hour';
+    if n <> 1 then raise exception 'FALLO webhook: past_due_since se reinició'; end if;
+
+    -- Un usuario no puede llamarlo.
+    perform set_config('request.jwt.claims', json_build_object('sub', user_b, 'role', 'authenticated')::text, true);
+    execute 'set local role authenticated';
+    begin
+      perform public.apply_subscription_event('evt_6', 'subscription.created', now(), user_b, 'c', 's',
+                                              'active', 'year', now() + interval '1 year', false);
+      raise exception 'FALLO: un usuario se aplicó un evento de suscripción';
+    exception when insufficient_privilege then
+      raise notice 'ok: apply_subscription_event solo para el service role';
+    end;
+    execute 'reset role';
+  end;
 end;
 $$;
 
-select 'OK: trigger + RLS + cuota + RPC + grafo + progreso + planes verificados' as resultado;
+select 'OK: trigger + RLS + cuota + RPC + grafo + progreso + planes + webhook verificados' as resultado;
 
 rollback;
