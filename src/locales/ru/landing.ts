@@ -19,6 +19,7 @@ export const landing: Dictionary["landing"] = {
   },
   how: {
     title: "От идеи к учебному плану",
+    visual: { generating: "Создаём ваш маршрут…", ready: "Ваш маршрут готов" },
     steps: [
       {
         title: "Выберите тему",
