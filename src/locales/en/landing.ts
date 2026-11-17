@@ -19,6 +19,7 @@ export const landing: Dictionary["landing"] = {
   },
   how: {
     title: "From an idea to a study plan",
+    visual: { generating: "Generating your path…", ready: "Your path is ready" },
     steps: [
       {
         title: "Pick a topic",

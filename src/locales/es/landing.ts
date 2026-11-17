@@ -17,6 +17,7 @@ export const landing = {
   },
   how: {
     title: "De una idea a un plan de estudio",
+    visual: { generating: "Generando tu ruta…", ready: "Tu ruta está lista" },
     steps: [
       {
         title: "Elegí un tema",
