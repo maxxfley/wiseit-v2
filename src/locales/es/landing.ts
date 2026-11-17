@@ -9,7 +9,8 @@ export const landing = {
   preview: {
     label: "Ruta · PostgreSQL",
     steps: ["Qué es una base de datos relacional", "Joins, índices y normalización", "Planes de ejecución y particionado"],
-    mapAria: "Ejemplo de mapa interactivo: tres temas de PostgreSQL conectados",
+    concepts: ["Tipos de JOIN (INNER, LEFT, RIGHT)", "Índices B-tree y cuándo usarlos", "Formas normales (1FN, 2FN, 3FN)"],
+    mapAria:"Ejemplo de mapa interactivo: tres temas de PostgreSQL conectados",
     cta: "Creá la tuya",
   },
   how: {
