@@ -10,7 +10,12 @@ import { useI18n } from "@/lib/i18n/provider";
 import { generateRoadmapAction } from "../actions/generate-roadmap";
 import { INITIAL_GENERATE_STATE } from "../types";
 
-export function GenerateForm() {
+interface GenerateFormProps {
+  /** Tema escrito en la landing antes de registrarse (ya validado en el servidor). */
+  defaultTopic?: string;
+}
+
+export function GenerateForm({ defaultTopic }: GenerateFormProps) {
   const { t, message } = useI18n();
   const copy = t.roadmaps.dashboard;
   const [state, formAction] = useActionState(generateRoadmapAction, INITIAL_GENERATE_STATE);
@@ -29,9 +34,15 @@ export function GenerateForm() {
             required
             maxLength={AI_LIMITS.topicMaxLength}
             placeholder={copy.topicPlaceholder}
+            defaultValue={defaultTopic}
             aria-invalid={Boolean(topicErrors)}
-            aria-describedby="topic-error"
+            aria-describedby={defaultTopic ? "topic-error topic-draft" : "topic-error"}
           />
+          {defaultTopic ? (
+            <p id="topic-draft" className="mt-1.5 text-sm text-muted-foreground">
+              {copy.draftHint}
+            </p>
+          ) : null}
           <FieldError id="topic-error" messages={topicErrors} />
         </div>
         {state.status === "error" && state.message ? (
