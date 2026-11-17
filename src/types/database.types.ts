@@ -18,16 +18,28 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          input_tokens: number | null
+          kind: string
+          model: string | null
+          output_tokens: number | null
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
+          input_tokens?: number | null
+          kind?: string
+          model?: string | null
+          output_tokens?: number | null
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
+          input_tokens?: number | null
+          kind?: string
+          model?: string | null
+          output_tokens?: number | null
           user_id?: string
         }
         Relationships: [
@@ -136,6 +148,27 @@ export type Database = {
           },
         ]
       }
+      paddle_webhook_events: {
+        Row: {
+          event_id: string
+          event_type: string
+          occurred_at: string
+          processed_at: string
+        }
+        Insert: {
+          event_id: string
+          event_type: string
+          occurred_at: string
+          processed_at?: string
+        }
+        Update: {
+          event_id?: string
+          event_type?: string
+          occurred_at?: string
+          processed_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -192,6 +225,53 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          billing_interval: string | null
+          cancel_at_period_end: boolean
+          current_period_end: string | null
+          last_event_at: string
+          paddle_customer_id: string | null
+          paddle_subscription_id: string | null
+          past_due_since: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          billing_interval?: string | null
+          cancel_at_period_end?: boolean
+          current_period_end?: string | null
+          last_event_at: string
+          paddle_customer_id?: string | null
+          paddle_subscription_id?: string | null
+          past_due_since?: string | null
+          status: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          billing_interval?: string | null
+          cancel_at_period_end?: boolean
+          current_period_end?: string | null
+          last_event_at?: string
+          paddle_customer_id?: string | null
+          paddle_subscription_id?: string | null
+          past_due_since?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -207,7 +287,21 @@ export type Database = {
         }
         Returns: string
       }
+      is_premium: { Args: never; Returns: boolean }
       owns_roadmap: { Args: { target_roadmap_id: string }; Returns: boolean }
+      record_ai_usage_tokens: {
+        Args: {
+          p_input_tokens: number
+          p_model: string
+          p_output_tokens: number
+          p_usage_id: string
+        }
+        Returns: undefined
+      }
+      reserve_ai_usage: {
+        Args: { p_free_limit: number; p_kind: string; p_premium_limit: number }
+        Returns: string
+      }
       reserve_generation: { Args: { p_daily_limit: number }; Returns: boolean }
       update_node_progress: {
         Args: {

@@ -20,7 +20,7 @@ export const messages: Dictionary["messages"] = {
   aiRateLimited: "Сервис ИИ перегружен. Попробуйте через минуту.",
   aiUnavailable: "Сейчас не получается создать маршрут. Попробуйте позже.",
   aiInvalidOutput: "ИИ вернул некорректный маршрут. Попробуйте другую тему или повторите попытку.",
-  quotaExhausted: "Вы достигли лимита: {limit} маршрутов в день. Возвращайтесь завтра.",
+  quotaExhausted: "Вы достигли дневного лимита маршрутов. Возвращайтесь завтра.",
   quotaError: "Не удалось проверить ваш лимит. Попробуйте позже.",
   saveFailed: "Маршрут создан, но сохранить его не удалось. Попробуйте ещё раз.",
   roadmapInvalid: "Некорректный маршрут.",
@@ -30,6 +30,9 @@ export const messages: Dictionary["messages"] = {
   nodeNotFound: "Тема не найдена.",
   progressInvalid: "Некорректные данные о прогрессе.",
   progressFailed: "Не удалось сохранить прогресс. Попробуйте ещё раз.",
+  // Планы
+  premiumRequired: "Сохранение прогресса доступно в Wiseit Premium.",
+  roadmapLimit: "Вы достигли лимита сохранённых маршрутов в бесплатном плане. Удалите один, чтобы создать новый.",
 };
 
 export const validation: Dictionary["validation"] = {

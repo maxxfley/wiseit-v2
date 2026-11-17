@@ -5,7 +5,7 @@ import { FieldError } from "@/components/ui/field-error";
 import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { AI_LIMITS } from "@/config/ai";
-import { format, translateCode } from "@/lib/i18n/format";
+import { translateCode } from "@/lib/i18n/format";
 import { useI18n } from "@/lib/i18n/provider";
 import { generateRoadmapAction } from "../actions/generate-roadmap";
 import { INITIAL_GENERATE_STATE } from "../types";
@@ -47,7 +47,7 @@ export function GenerateForm({ defaultTopic }: GenerateFormProps) {
         </div>
         {state.status === "error" && state.message ? (
           <p role="alert" className="text-sm text-danger">
-            {format(message(state.message), { limit: AI_LIMITS.dailyGenerations })}
+            {message(state.message)}
           </p>
         ) : null}
         <SubmitButton pendingLabel={copy.generating}>{copy.generate}</SubmitButton>

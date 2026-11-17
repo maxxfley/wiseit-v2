@@ -10,8 +10,13 @@ import { nodeProgressInputSchema } from "../schemas/node-progress.schema";
 
 export type NodeProgressResult = { ok: true } | { ok: false; message: MessageKey };
 
-// Códigos propios de `update_node_progress` (ver la migración del Paso 6).
-const DB_ERRORS: Readonly<Record<string, MessageKey>> = { WS423: "nodeLocked", WS404: "nodeNotFound", "22023": "progressInvalid" };
+// Códigos propios de `update_node_progress` (migraciones de los Pasos 6 y 7a).
+const DB_ERRORS: Readonly<Record<string, MessageKey>> = {
+  WS402: "premiumRequired",
+  WS423: "nodeLocked",
+  WS404: "nodeNotFound",
+  "22023": "progressInvalid",
+};
 
 /**
  * Actualiza el progreso de un nodo. Se llama desde el mapa (no desde un <form>), con la UI

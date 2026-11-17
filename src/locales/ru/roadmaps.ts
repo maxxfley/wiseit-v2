@@ -10,6 +10,8 @@ export const roadmaps: Dictionary["roadmaps"] = {
     generate: "Создать маршрут",
     generating: "Создаём ваш маршрут…",
     remaining: "Сегодня осталось попыток: {remaining} из {limit}.",
+    limitNotice: "У вас {limit} сохранённых маршрута — максимум бесплатного плана. Удалите один, чтобы создать новый.",
+    limitLink: "Перейти в «Мои маршруты»",
     recentHeading: "Ваши последние маршруты",
     viewAll: "Смотреть все",
   },
