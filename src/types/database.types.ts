@@ -277,6 +277,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_subscription_event: {
+        Args: {
+          p_billing_interval?: string
+          p_cancel_at_period_end?: boolean
+          p_current_period_end?: string
+          p_customer_id: string
+          p_event_id: string
+          p_event_type: string
+          p_occurred_at: string
+          p_status: string
+          p_subscription_id: string
+          p_user_id: string
+        }
+        Returns: string
+      }
       create_roadmap_with_nodes: {
         Args: {
           p_language?: string

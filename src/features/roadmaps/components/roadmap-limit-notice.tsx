@@ -16,13 +16,19 @@ export async function RoadmapLimitNotice() {
   const supabase = await createSupabaseServerClient();
   if (!(await hasReachedRoadmapLimit(supabase, await getIsPremium()))) return null;
 
-  const t = (await getDictionary()).roadmaps.dashboard;
+  const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
+  const t = dict.roadmaps.dashboard;
   return (
     <div role="note" className="max-w-xl rounded-md border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-body">
       <p>{format(t.limitNotice, { limit: PLAN_LIMITS.free.maxSavedRoadmaps })}</p>
-      <Link href={localizePath(await getLocale(), ROUTES.roadmaps)} className="mt-1 inline-block font-medium text-accent hover:text-primary-hover">
-        {t.limitLink}
-      </Link>
+      <p className="mt-1 flex flex-wrap gap-x-4">
+        <Link href={localizePath(locale, ROUTES.roadmaps)} className="font-medium text-accent hover:text-primary-hover">
+          {t.limitLink}
+        </Link>
+        <Link href={localizePath(locale, ROUTES.pricing)} className="font-medium text-accent hover:text-primary-hover">
+          {dict.plans.upsell}
+        </Link>
+      </p>
     </div>
   );
 }

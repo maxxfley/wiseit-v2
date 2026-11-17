@@ -38,6 +38,10 @@ export const messages = {
   // Planes
   premiumRequired: "Guardar el progreso es una función de Wiseit Premium.",
   roadmapLimit: "Llegaste al máximo de rutas guardadas del plan gratis. Borrá una para crear otra.",
+  // Pagos
+  checkoutFailed: "No pudimos iniciar el pago. Intentá de nuevo en unos minutos.",
+  alreadyPremium: "Ya tenés Premium activo.",
+  portalFailed: "No pudimos abrir la gestión de tu suscripción. Intentá de nuevo.",
 };
 
 /** Mensajes de validación de Zod: los esquemas usan estas claves como `message`. */

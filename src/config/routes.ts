@@ -7,6 +7,8 @@ export const ROUTES = {
   resetPassword: "/reset-password",
   dashboard: "/dashboard",
   roadmaps: "/roadmaps",
+  /** Pública: precios y suscripción (Paso 7b). */
+  pricing: "/pricing",
 } as const;
 
 /** Requieren sesión: sin ella, el proxy redirige a login. */

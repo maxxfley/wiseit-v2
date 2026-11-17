@@ -1,4 +1,4 @@
--- Verificación de la base (Pasos 2, 4, 6, 8 y 7a, solo lectura). Ejecutar en el SQL Editor de Supabase.
+-- Verificación de la base (Pasos 2, 4, 6, 8, 7a y 7b, solo lectura). Ejecutar en el SQL Editor de Supabase.
 -- Resultado esperado: todas las filas con ok = true.
 
 with expected_policies(table_name, policy_name) as (
@@ -73,7 +73,7 @@ select 'Función SECURITY INVOKER con search_path fijo: ' || f.fname,
          where n.nspname = 'public' and p.proname = f.fname
            and not p.prosecdef and p.proconfig @> array['search_path=""']
        )
-from (values ('reserve_generation'), ('create_roadmap_with_nodes'), ('reserve_ai_usage'), ('is_premium'), ('enforce_roadmap_limit')) as f(fname)
+from (values ('reserve_generation'), ('create_roadmap_with_nodes'), ('reserve_ai_usage'), ('is_premium'), ('enforce_roadmap_limit'), ('apply_subscription_event')) as f(fname)
 
 union all
 select 'node_edges sin update para usuarios (aristas inmutables)',
@@ -151,6 +151,12 @@ select 'Trigger roadmaps_enforce_limit activo',
 union all
 select 'enforce_roadmap_limit no ejecutable directamente por authenticated',
        not has_function_privilege('authenticated', 'public.enforce_roadmap_limit()', 'execute')
+
+union all
+select 'apply_subscription_event: solo service_role puede ejecutarlo',
+       has_function_privilege('service_role', 'public.apply_subscription_event(text, text, timestamptz, uuid, text, text, text, text, timestamptz, boolean)', 'execute')
+       and not has_function_privilege('authenticated', 'public.apply_subscription_event(text, text, timestamptz, uuid, text, text, text, text, timestamptz, boolean)', 'execute')
+       and not has_function_privilege('anon', 'public.apply_subscription_event(text, text, timestamptz, uuid, text, text, text, text, timestamptz, boolean)', 'execute')
 
 union all
 select 'ai_usage.kind con check de valores',

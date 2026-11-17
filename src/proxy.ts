@@ -60,8 +60,10 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Excluye assets estáticos para no ejecutar lógica de auth sobre CSS/JS/imágenes.
+  // Excluye assets estáticos para no ejecutar lógica de auth sobre CSS/JS/imágenes, y `/api`:
+  // los Route Handlers (ej. el webhook de Paddle) no llevan idioma ni cookies de sesión, y
+  // Paddle no sigue redirecciones. Cada handler hace su propia verificación (firma, etc.).
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml)$).*)",
+    "/((?!api/|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml)$).*)",
   ],
 };

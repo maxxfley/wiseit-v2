@@ -33,6 +33,10 @@ export const messages: Dictionary["messages"] = {
   // Планы
   premiumRequired: "Сохранение прогресса доступно в Wiseit Premium.",
   roadmapLimit: "Вы достигли лимита сохранённых маршрутов в бесплатном плане. Удалите один, чтобы создать новый.",
+  // Платежи
+  checkoutFailed: "Не удалось начать оплату. Попробуйте ещё раз через несколько минут.",
+  alreadyPremium: "У вас уже активен Premium.",
+  portalFailed: "Не удалось открыть управление подпиской. Попробуйте ещё раз.",
 };
 
 export const validation: Dictionary["validation"] = {
