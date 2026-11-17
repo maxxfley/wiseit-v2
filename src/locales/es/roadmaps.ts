@@ -4,6 +4,7 @@ export const roadmaps = {
     createHeading: "Crear una ruta",
     topicLabel: "¿Qué querés aprender?",
     topicPlaceholder: "Ej: PostgreSQL, teoría musical, fotografía…",
+    draftHint: "Este es el tema que escribiste en la portada. Podés cambiarlo antes de generar.",
     generate: "Generar ruta",
     generating: "Generando tu ruta…",
     remaining: "Te quedan {remaining} de {limit} intentos hoy.",
