@@ -15,7 +15,7 @@ export function SidebarNav() {
   ];
 
   return (
-    <nav aria-label={t.common.nav.primary} className="flex gap-1 md:flex-col">
+    <nav aria-label={t.common.nav.primary} className="flex flex-col gap-1">
       {items.map(({ href: itemHref, label }) => {
         const active = pathname === itemHref || pathname.startsWith(`${itemHref}/`);
         return (

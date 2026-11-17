@@ -11,6 +11,8 @@ export const common = {
     signup: "Crear cuenta",
     logout: "Salir",
     userFallback: "Usuario",
+    openMenu: "Abrir menú",
+    closeMenu: "Cerrar menú",
   },
   language: { label: "Idioma" },
   footer: { tagline: "Rutas de aprendizaje con IA, de Básico a Avanzado." },
