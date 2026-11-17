@@ -22,14 +22,15 @@ export async function Hero() {
           <p className="mb-4 font-display text-xs font-medium uppercase tracking-[0.6px] text-accent">{t.eyebrow}</p>
           <h1 className="font-display text-hero font-medium text-foreground">{t.title}</h1>
           <p className="mt-6 max-w-[72ch] text-lg text-muted-foreground">{t.body}</p>
-          <div className="mt-8">
+          <div className="mt-6">
             {/*
               Escritorio: al abrir el mapa el campo se despliega y los botones bajan lo justo (no hasta el
-              borde de la tarjeta). Separación de 20 px arriba (-mt-3 sobre los 32 del contenedor) y abajo
+              borde de la tarjeta). Sin campo, los botones quedan a 24 px del texto (mt-6). Desplegado:
+              20 px arriba del campo (-mt-1 sobre los 24 del contenedor) y abajo
               (pb-6 menos los 4 px del -m-1 interno).
               En celular el campo va dentro de la tarjeta (PreviewFooter).
             */}
-            <TopicReveal className="hidden max-w-lg md:grid" revealedClassName="-mt-3" innerClassName="pb-6" />
+            <TopicReveal className="hidden max-w-lg md:grid" revealedClassName="-mt-1" innerClassName="pb-6" />
             <div className="flex flex-wrap gap-4">
               <Link href={localizePath(locale, ROUTES.signup)} className={buttonStyles("primary")}>
                 {t.primaryCta}
