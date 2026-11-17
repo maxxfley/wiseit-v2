@@ -14,11 +14,13 @@ interface RoadmapToSave {
   nodes: readonly OrderedNode[];
 }
 
+export type SaveResult = { ok: true; id: string } | { ok: false; reason: "roadmap_limit" | "error" };
+
 /**
  * Guarda roadmap + nodos + aristas en UNA transacción (RPC `create_roadmap_with_nodes`).
- * Devuelve el id del roadmap, o null si falló (el detalle queda en el log del servidor).
+ * `roadmap_limit`: el plan gratis ya tiene el máximo de rutas (trigger, código WS409).
  */
-export async function saveRoadmap(supabase: SupabaseClient<Database>, roadmap: RoadmapToSave): Promise<string | null> {
+export async function saveRoadmap(supabase: SupabaseClient<Database>, roadmap: RoadmapToSave): Promise<SaveResult> {
   const { data, error } = await supabase.rpc("create_roadmap_with_nodes", {
     p_topic: roadmap.topic,
     p_title: roadmap.title,
@@ -35,7 +37,7 @@ export async function saveRoadmap(supabase: SupabaseClient<Database>, roadmap: R
   });
   if (error) {
     console.error("[roadmaps/save] Fallo al guardar la ruta", { code: error.code, message: error.message });
-    return null;
+    return { ok: false, reason: error.code === "WS409" ? "roadmap_limit" : "error" };
   }
-  return data;
+  return { ok: true, id: data };
 }

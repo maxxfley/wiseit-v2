@@ -20,9 +20,10 @@ interface RoadmapMapProps {
   roadmapId: string;
   theme: RoadmapTheme;
   nodes: RoadmapNodeView[];
+  canTrackProgress: boolean;
 }
 
-export function RoadmapMap({ roadmapId, theme, nodes: serverNodes }: RoadmapMapProps) {
+export function RoadmapMap({ roadmapId, theme, nodes: serverNodes, canTrackProgress }: RoadmapMapProps) {
   const { t, message } = useI18n();
   const { nodes, update, error, pending, clearError } = useNodeProgress(roadmapId, serverNodes);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -51,6 +52,8 @@ export function RoadmapMap({ roadmapId, theme, nodes: serverNodes }: RoadmapMapP
   }, [nodes, byId]);
 
   const selected = selectedId ? byId.get(selectedId) : undefined;
+  // Gratis: progreso solo en el primer tema (misma regla que `update_node_progress`).
+  const firstOrder = useMemo(() => Math.min(...nodes.map((node) => node.orderIndex)), [nodes]);
 
   return (
     <div
@@ -92,6 +95,7 @@ export function RoadmapMap({ roadmapId, theme, nodes: serverNodes }: RoadmapMapP
           node={selected}
           byId={byId}
           pending={pending}
+          canTrackProgress={canTrackProgress || selected.orderIndex === firstOrder}
           error={error ? message(error) : null}
           onUpdate={(concepts, markComplete) => update(selected.id, concepts, markComplete)}
           onSelect={select}

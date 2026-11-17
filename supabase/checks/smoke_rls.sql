@@ -1,4 +1,5 @@
--- Smoke test: trigger de profiles, aislamiento RLS, cuota, RPC de creación y grafo + progreso (Paso 6).
+-- Smoke test: trigger de profiles, aislamiento RLS, cuota, RPC de creación, grafo + progreso (Paso 6)
+-- y planes (Paso 7a: Premium, cuotas por tipo, límite de rutas, bloqueo de progreso, past_due).
 -- Todo ocurre dentro de una transacción que termina en ROLLBACK: no deja datos.
 -- Si algo falla, aborta con 'FALLO: ...'. Si todo pasa, devuelve 'OK'.
 
@@ -22,6 +23,10 @@ begin
   -- 1. El trigger creó ambos perfiles.
   select count(*) into n from public.profiles where id in (user_a, user_b);
   if n <> 2 then raise exception 'FALLO trigger: % perfiles creados (esperado 2)', n; end if;
+
+  -- 1b. (Paso 7a) A es Premium; B es gratis. Lo escribe el "webhook" (rol con privilegios).
+  insert into public.subscriptions (user_id, status, billing_interval, current_period_end, last_event_at)
+  values (user_a, 'active', 'month', now() + interval '30 days', now());
 
   -- 2. Actuando como A: crea su roadmap y un nodo.
   perform set_config('request.jwt.claims', json_build_object('sub', user_a, 'role', 'authenticated')::text, true);
@@ -211,17 +216,98 @@ begin
       raise notice 'ok: progreso ajeno inaccesible';
     end;
 
-    -- 12. Borrar el roadmap arrastra nodos y aristas.
+    -- 11b. (Paso 7a) Nadie escribe progreso ni quita prerrequisitos por fuera del RPC.
     perform set_config('request.jwt.claims', json_build_object('sub', user_a, 'role', 'authenticated')::text, true);
+    begin
+      update public.nodes set completed_at = now() where id = n2;
+      raise exception 'FALLO: A actualizó un nodo directamente (saltando el RPC)';
+    exception when insufficient_privilege then
+      raise notice 'ok: update directo de nodos bloqueado';
+    end;
+    begin
+      delete from public.node_edges where node_id = n2;
+      raise exception 'FALLO: A borró un prerrequisito directamente';
+    exception when insufficient_privilege then
+      raise notice 'ok: borrar aristas directamente bloqueado';
+    end;
+
+    -- 12. Borrar el roadmap arrastra nodos y aristas.
     delete from public.roadmaps where id = rid;
     select count(*) into n from public.node_edges where roadmap_id = rid;
     if n <> 0 then raise exception 'FALLO: quedaron % aristas tras borrar el roadmap', n; end if;
+  end;
+
+  -- 13. (Paso 7a) Planes. A es Premium y B gratis.
+  declare
+    u1 uuid; u2 uuid; b_node uuid;
+  begin
+    if not public.is_premium() then raise exception 'FALLO planes: A debería ser Premium'; end if;
+    begin
+      update public.subscriptions set status = 'active' where user_id = user_a;
+      raise exception 'FALLO: A modificó su suscripción';
+    exception when insufficient_privilege then
+      raise notice 'ok: el usuario no puede escribir su suscripción';
+    end;
+
+    -- Cuota por tipo y plan: A (Premium, límite 2) reserva 2 veces; la tercera no.
+    u1 := public.reserve_ai_usage('material', 0, 2);
+    u2 := public.reserve_ai_usage('material', 0, 2);
+    if u1 is null or u2 is null then raise exception 'FALLO cuota: reserva Premium rechazada'; end if;
+    if public.reserve_ai_usage('material', 0, 2) is not null then raise exception 'FALLO cuota: A superó el límite'; end if;
+    -- Los tokens se registran una sola vez.
+    perform public.record_ai_usage_tokens(u1, 'openai/gpt-oss-120b', 1000, 500);
+    perform public.record_ai_usage_tokens(u1, 'otro', 1, 1);
+    select count(*) into n from public.ai_usage where id = u1 and model = 'openai/gpt-oss-120b' and input_tokens = 1000;
+    if n <> 1 then raise exception 'FALLO tokens: no se registraron o se pisaron'; end if;
+
+    -- B (gratis): límite 0 = función no disponible; no puede tocar los tokens de A.
+    perform set_config('request.jwt.claims', json_build_object('sub', user_b, 'role', 'authenticated')::text, true);
+    if public.is_premium() then raise exception 'FALLO planes: B no debería ser Premium'; end if;
+    if public.reserve_ai_usage('material', 0, 15) is not null then raise exception 'FALLO cuota: B gratis reservó material'; end if;
+    perform public.record_ai_usage_tokens(u2, 'hack', 9, 9);
+
+    -- B gratis: máximo 4 rutas guardadas; la quinta se rechaza.
+    for i in 1..4 loop
+      insert into public.roadmaps (user_id, topic, title) values (user_b, 'B' || i, 'Ruta B') returning id into rid;
+    end loop;
+    begin
+      insert into public.roadmaps (user_id, topic, title) values (user_b, 'B5', 'Ruta B');
+      raise exception 'FALLO: B gratis creó una quinta ruta';
+    exception when sqlstate 'WS409' then
+      raise notice 'ok: límite de rutas del plan gratis';
+    end;
+
+    -- B gratis: guarda progreso en el primer tema; en los demás es Premium.
+    insert into public.nodes (roadmap_id, title, description, difficulty, order_index, metadata)
+    values (rid, 'b0', 'd', 'Básico', 0, '{"key_concepts":["x"]}') returning id into b_node;
+    perform public.update_node_progress(b_node, '{0}', false);
+    insert into public.nodes (roadmap_id, title, description, difficulty, order_index, metadata)
+    values (rid, 'b1', 'd', 'Básico', 1, '{"key_concepts":["x"]}') returning id into b_node;
+    begin
+      perform public.update_node_progress(b_node, '{0}', false);
+      raise exception 'FALLO: B gratis guardó progreso';
+    exception when sqlstate 'WS402' then
+      raise notice 'ok: progreso bloqueado en el plan gratis';
+    end;
+
+    -- Cobro fallido: Premium durante 10 días; después, no.
+    execute 'reset role';
+    select count(*) into n from public.ai_usage where id = u2 and model is null;
+    if n <> 1 then raise exception 'FALLO tokens: B escribió tokens de una reserva de A'; end if;
+    update public.subscriptions set status = 'past_due', past_due_since = now() - interval '2 days' where user_id = user_a;
+    perform set_config('request.jwt.claims', json_build_object('sub', user_a, 'role', 'authenticated')::text, true);
+    execute 'set local role authenticated';
+    if not public.is_premium() then raise exception 'FALLO planes: past_due de 2 días debería seguir Premium'; end if;
+    execute 'reset role';
+    update public.subscriptions set past_due_since = now() - interval '11 days' where user_id = user_a;
+    execute 'set local role authenticated';
+    if public.is_premium() then raise exception 'FALLO planes: past_due de 11 días no debería ser Premium'; end if;
   end;
 
   execute 'reset role';
 end;
 $$;
 
-select 'OK: trigger + RLS + cuota + RPC + grafo + progreso verificados' as resultado;
+select 'OK: trigger + RLS + cuota + RPC + grafo + progreso + planes verificados' as resultado;
 
 rollback;

@@ -1,5 +1,9 @@
 export const map = {
   status: { completed: "Completado", in_progress: "En proceso", available: "Disponible", locked: "Bloqueado" },
+  premium: {
+    title: "Tu progreso, con Wiseit Premium",
+    body: "En el plan gratis podés guardar el progreso del primer tema. Con Premium tildás conceptos en toda la ruta, completás temas y desbloqueás los siguientes.",
+  },
   nodeAria: "{title}. {status}, {percent}%",
   percentDone: "{percent}% completado",
   overallAria: "Progreso general: {percent}%",

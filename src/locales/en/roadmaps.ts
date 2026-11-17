@@ -10,6 +10,8 @@ export const roadmaps: Dictionary["roadmaps"] = {
     generate: "Generate path",
     generating: "Generating your path…",
     remaining: "You have {remaining} of {limit} attempts left today.",
+    limitNotice: "You have {limit} saved paths, the free plan's maximum. Delete one to create another.",
+    limitLink: "Go to My paths",
     recentHeading: "Your latest paths",
     viewAll: "View all",
   },

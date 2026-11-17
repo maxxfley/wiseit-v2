@@ -7,12 +7,15 @@ import { deriveStatus, nodePercent, type RoadmapNodeView } from "../../utils/nod
 import { ConceptChecklist } from "./concept-checklist";
 import { NodePanelActions } from "./node-panel-actions";
 import { NodeIconView } from "./node-visuals";
+import { PremiumProgressNotice } from "./premium-progress-notice";
 import { StatusBadge } from "./status-badge";
 
 interface NodePanelProps {
   node: RoadmapNodeView;
   byId: ReadonlyMap<string, RoadmapNodeView>;
   pending: boolean;
+  /** False = tema solo Premium para este usuario (checklist de solo lectura + invitación). */
+  canTrackProgress: boolean;
   error: string | null;
   onUpdate: (completedConcepts: number[], markComplete: boolean) => void;
   onSelect: (id: string) => void;
@@ -22,7 +25,7 @@ interface NodePanelProps {
 const SECTION_TITLE = "mb-2 font-mono text-xs font-medium uppercase tracking-[0.6px] text-muted-foreground";
 
 /** Panel lateral (escritorio) u hoja inferior (móvil) con el detalle y el progreso del nodo. */
-export function NodePanel({ node, byId, pending, error, onUpdate, onSelect, onClose }: NodePanelProps) {
+export function NodePanel({ node, byId, pending, canTrackProgress, error, onUpdate, onSelect, onClose }: NodePanelProps) {
   const { t: dict } = useI18n();
   const t = dict.map;
   const status = deriveStatus(node, byId);
@@ -100,7 +103,7 @@ export function NodePanel({ node, byId, pending, error, onUpdate, onSelect, onCl
         <ConceptChecklist
           concepts={node.key_concepts}
           completed={node.completedConcepts}
-          disabled={status === "locked" || pending}
+          disabled={!canTrackProgress || status === "locked" || pending}
           onToggle={toggle}
         />
       </section>
@@ -119,13 +122,17 @@ export function NodePanel({ node, byId, pending, error, onUpdate, onSelect, onCl
       ) : null}
 
       <div className="mt-5">
-        <NodePanelActions
-          status={status}
-          pending={pending}
-          onStart={() => onUpdate(node.completedConcepts, false)}
-          onComplete={() => onUpdate(node.completedConcepts, true)}
-          onReset={() => onUpdate([], false)}
-        />
+        {canTrackProgress ? (
+          <NodePanelActions
+            status={status}
+            pending={pending}
+            onStart={() => onUpdate(node.completedConcepts, false)}
+            onComplete={() => onUpdate(node.completedConcepts, true)}
+            onReset={() => onUpdate([], false)}
+          />
+        ) : (
+          <PremiumProgressNotice />
+        )}
       </div>
     </aside>
   );

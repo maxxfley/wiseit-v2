@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/config/routes";
 import { RoadmapTimeline } from "@/features/roadmaps/components/roadmap-timeline";
+import { getIsPremium } from "@/features/plans/services/plan";
 import { RoadmapViews } from "@/features/roadmaps/components/roadmap-views";
 import { getRoadmapDetail } from "@/features/roadmaps/services/roadmap-detail";
 import { format, plural } from "@/lib/i18n/format";
@@ -26,7 +27,7 @@ function LegacyNotice({ text }: { text: string }) {
 
 async function RoadmapDetailView({ params }: { params: PageProps<"/[lang]/roadmaps/[id]">["params"] }) {
   const { id } = await params;
-  const roadmap = await getRoadmapDetail(id);
+  const [roadmap, premium] = await Promise.all([getRoadmapDetail(id), getIsPremium()]);
   if (!roadmap) notFound();
   const locale = await getLocale();
   const t = (await getDictionary()).roadmaps.detail;
@@ -42,7 +43,13 @@ async function RoadmapDetailView({ params }: { params: PageProps<"/[lang]/roadma
         </p>
       </header>
       {roadmap.hasGraph ? (
-        <RoadmapViews roadmapId={roadmap.id} theme={roadmap.theme} nodes={roadmap.nodes} list={timeline} />
+        <RoadmapViews
+          roadmapId={roadmap.id}
+          theme={roadmap.theme}
+          nodes={roadmap.nodes}
+          canTrackProgress={premium}
+          list={timeline}
+        />
       ) : (
         <>
           <LegacyNotice text={t.legacy} />

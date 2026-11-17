@@ -24,7 +24,7 @@ export const messages = {
   aiRateLimited: "El servicio de IA está saturado. Probá de nuevo en un minuto.",
   aiUnavailable: "No pudimos generar la ruta ahora. Intentá de nuevo más tarde.",
   aiInvalidOutput: "La IA devolvió una ruta inválida. Probá con otro tema o reintentá.",
-  quotaExhausted: "Llegaste al límite de {limit} rutas por día. Volvé mañana.",
+  quotaExhausted: "Llegaste a tu límite de rutas por día. Volvé mañana.",
   quotaError: "No pudimos verificar tu cupo. Intentá de nuevo más tarde.",
   saveFailed: "Generamos la ruta pero no pudimos guardarla. Intentá de nuevo.",
   roadmapInvalid: "Ruta inválida.",
@@ -35,6 +35,9 @@ export const messages = {
   nodeNotFound: "No encontramos este tema.",
   progressInvalid: "El progreso enviado no es válido.",
   progressFailed: "No pudimos guardar tu progreso. Intentá de nuevo.",
+  // Planes
+  premiumRequired: "Guardar el progreso es una función de Wiseit Premium.",
+  roadmapLimit: "Llegaste al máximo de rutas guardadas del plan gratis. Borrá una para crear otra.",
 };
 
 /** Mensajes de validación de Zod: los esquemas usan estas claves como `message`. */
