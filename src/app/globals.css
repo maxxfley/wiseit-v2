@@ -85,6 +85,18 @@
    * el mapa. El reposo replica `bg-primary/15 text-accent` para que no haya salto al empezar o cortar.
    */
   --animate-firefly: firefly 2.6s ease-in-out infinite;
+  /* Nodos encendidos de la red neuronal de la landing ("Cómo funciona"). */
+  --animate-twinkle: twinkle 2.6s ease-in-out infinite;
+
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
 
   @keyframes firefly {
     0%,
