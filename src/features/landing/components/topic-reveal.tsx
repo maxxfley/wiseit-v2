@@ -23,7 +23,9 @@ export function TopicReveal({ className, revealedClassName, innerClassName }: To
     <div
       inert={!revealed}
       className={cn(
-        "grid transition-[grid-template-rows,opacity,margin] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        // Un poco más lento y con una curva menos brusca que la tarjeta (500 ms): el recorrido es corto y
+        // a la misma velocidad se percibe como un salto. 700 ms mantiene el equilibrio con la derecha.
+        "grid transition-[grid-template-rows,opacity,margin] duration-700 ease-[cubic-bezier(0.33,1,0.68,1)]",
         revealed ? cn("grid-rows-[1fr] opacity-100", revealedClassName) : "grid-rows-[0fr] opacity-0",
         className,
       )}
