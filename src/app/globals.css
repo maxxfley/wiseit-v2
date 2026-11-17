@@ -80,6 +80,26 @@
   --animate-fade-up: fade-up 420ms ease-out both;
   /* Panel lateral del menú móvil. */
   --animate-slide-in: slide-in 220ms ease-out both;
+  /*
+   * "Luciérnaga": el estado hover (fondo morado + glow) se enciende y apaga solo, para invitar a abrir
+   * el mapa. El reposo replica `bg-primary/15 text-accent` para que no haya salto al empezar o cortar.
+   */
+  --animate-firefly: firefly 2.6s ease-in-out infinite;
+
+  @keyframes firefly {
+    0%,
+    65%,
+    100% {
+      background-color: color-mix(in oklab, var(--primary) 15%, transparent);
+      color: var(--accent);
+      box-shadow: 0 0 0 #0000, 0 0 0 #0000;
+    }
+    30% {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      box-shadow: var(--shadow-glow);
+    }
+  }
 
   @keyframes slide-in {
     from {

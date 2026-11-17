@@ -11,6 +11,8 @@ export const landing: Dictionary["landing"] = {
   preview: {
     label: "Path · PostgreSQL",
     steps: ["What a relational database is", "Joins, indexes and normalization", "Query plans and partitioning"],
+    mapAria: "Sample interactive map: three connected PostgreSQL topics",
+    cta: "Create yours",
   },
   how: {
     title: "From an idea to a study plan",
