@@ -80,6 +80,19 @@
   --animate-fade-up: fade-up 420ms ease-out both;
   /* Panel lateral del menú móvil. */
   --animate-slide-in: slide-in 220ms ease-out both;
+  /* "Luciérnaga": el mismo glow del hover se enciende y apaga solo, para invitar a abrir el mapa. */
+  --animate-firefly: firefly 3.2s ease-in-out infinite;
+
+  @keyframes firefly {
+    0%,
+    45%,
+    100% {
+      box-shadow: 0 0 0 #0000, 0 0 0 #0000;
+    }
+    22% {
+      box-shadow: var(--shadow-glow);
+    }
+  }
 
   @keyframes slide-in {
     from {
