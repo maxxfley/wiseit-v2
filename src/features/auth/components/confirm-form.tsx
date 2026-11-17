@@ -13,7 +13,7 @@ interface ConfirmFormProps {
 
 /** Botón explícito: el token solo se consume cuando la persona lo pulsa (no al abrir el link). */
 export function ConfirmForm({ tokenHash, type }: ConfirmFormProps) {
-  const { t } = useI18n();
+  const { t, message } = useI18n();
   const [state, formAction] = useActionState(confirmEmailAction, INITIAL_AUTH_STATE);
   return (
     <form action={formAction} className="space-y-4">
@@ -21,7 +21,7 @@ export function ConfirmForm({ tokenHash, type }: ConfirmFormProps) {
       <input type="hidden" name="type" value={type} />
       {state.message ? (
         <p role="alert" className="text-sm text-danger">
-          {t.messages[state.message]}
+          {message(state.message)}
         </p>
       ) : null}
       <SubmitButton pendingLabel={t.auth.confirm.pending} className="w-full">
