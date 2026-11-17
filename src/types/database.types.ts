@@ -158,6 +158,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          language: string
           theme: string
           title: string
           topic: string
@@ -166,6 +167,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          language?: string
           theme?: string
           title: string
           topic: string
@@ -174,6 +176,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          language?: string
           theme?: string
           title?: string
           topic?: string
@@ -196,6 +199,7 @@ export type Database = {
     Functions: {
       create_roadmap_with_nodes: {
         Args: {
+          p_language?: string
           p_nodes: Json
           p_theme: string
           p_title: string
