@@ -11,10 +11,10 @@ export async function Navbar() {
     <header className="relative z-(--z-nav) border-b border-border">
       <nav
         aria-label={t.common.nav.primary}
-        className="mx-auto flex h-16 w-full max-w-page items-center justify-between gap-3 px-6"
+        className="mx-auto flex h-16 w-full max-w-page items-center justify-between gap-2 px-4 sm:gap-3 sm:px-6"
       >
         <Logo />
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-1 sm:gap-4">
           {/* usePathname es dato de runtime en rutas dinámicas: va en Suspense. */}
           <Suspense fallback={<Skeleton className="h-6 w-24" />}>
             <LocaleSwitcher />
