@@ -84,17 +84,17 @@
    * "Luciérnaga": el estado hover (fondo morado + glow) se enciende y apaga solo, para invitar a abrir
    * el mapa. El reposo replica `bg-primary/15 text-accent` para que no haya salto al empezar o cortar.
    */
-  --animate-firefly: firefly 3.2s ease-in-out infinite;
+  --animate-firefly: firefly 2.6s ease-in-out infinite;
 
   @keyframes firefly {
     0%,
-    55%,
+    65%,
     100% {
       background-color: color-mix(in oklab, var(--primary) 15%, transparent);
       color: var(--accent);
       box-shadow: 0 0 0 #0000, 0 0 0 #0000;
     }
-    25% {
+    30% {
       background-color: var(--primary);
       color: var(--primary-foreground);
       box-shadow: var(--shadow-glow);
