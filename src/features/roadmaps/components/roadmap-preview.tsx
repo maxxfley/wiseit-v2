@@ -1,34 +1,24 @@
 import { Card } from "@/components/ui/card";
+import { getDictionary } from "@/lib/i18n/server";
+import { DIFFICULTY_LEVELS } from "../schemas/roadmap-output.schema";
 
-interface PreviewStep {
-  level: "Básico" | "Intermedio" | "Avanzado";
-  title: string;
-}
+/** Vista previa de un roadmap para la landing: contenido estático de demostración, un paso por nivel. */
+export async function RoadmapPreview() {
+  const t = await getDictionary();
+  const steps = DIFFICULTY_LEVELS.map((level, index) => ({
+    level: t.common.levels[level],
+    title: t.landing.preview.steps[index] ?? "",
+  }));
 
-// Contenido estático de demostración para la landing (no proviene de la base de datos).
-const STEPS: readonly PreviewStep[] = [
-  { level: "Básico", title: "Qué es una base de datos relacional" },
-  { level: "Intermedio", title: "Joins, índices y normalización" },
-  { level: "Avanzado", title: "Planes de ejecución y particionado" },
-];
-
-/** Vista previa de un roadmap: muestra la progresión por niveles. */
-export function RoadmapPreview() {
   return (
     <Card className="w-full max-w-md bg-surface-raised shadow-float">
       <p className="font-mono text-xs font-medium uppercase tracking-[0.6px] text-muted-foreground">
-        Ruta · PostgreSQL
+        {t.landing.preview.label}
       </p>
       <ol className="mt-4 space-y-4 border-l border-border-strong pl-5">
-        {STEPS.map((step, index) => (
-          <li
-            key={step.title}
-            className="animate-fade-up"
-            style={{ animationDelay: `${index * 80}ms` }}
-          >
-            <span className="font-mono text-xs font-medium tracking-[0.6px] text-accent">
-              {step.level}
-            </span>
+        {steps.map((step, index) => (
+          <li key={step.level} className="animate-fade-up" style={{ animationDelay: `${index * 80}ms` }}>
+            <span className="font-mono text-xs font-medium tracking-[0.6px] text-accent">{step.level}</span>
             <p className="font-medium text-foreground">{step.title}</p>
           </li>
         ))}

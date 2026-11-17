@@ -3,24 +3,25 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/config/routes";
+import { useI18n } from "@/lib/i18n/provider";
 import { cn } from "@/utils/cn";
-
-const NAV_ITEMS = [
-  { href: ROUTES.dashboard, label: "Dashboard" },
-  { href: ROUTES.roadmaps, label: "Mis rutas" },
-] as const;
 
 export function SidebarNav() {
   const pathname = usePathname();
+  const { t, href } = useI18n();
+  const items = [
+    { href: href(ROUTES.dashboard), label: t.common.nav.dashboard },
+    { href: href(ROUTES.roadmaps), label: t.common.nav.myRoadmaps },
+  ];
 
   return (
-    <nav aria-label="Principal" className="flex gap-1 md:flex-col">
-      {NAV_ITEMS.map(({ href, label }) => {
-        const active = pathname === href || pathname.startsWith(`${href}/`);
+    <nav aria-label={t.common.nav.primary} className="flex gap-1 md:flex-col">
+      {items.map(({ href: itemHref, label }) => {
+        const active = pathname === itemHref || pathname.startsWith(`${itemHref}/`);
         return (
           <Link
-            key={href}
-            href={href}
+            key={itemHref}
+            href={itemHref}
             aria-current={active ? "page" : undefined}
             className={cn(
               "rounded-md px-3 py-2 text-sm font-medium transition-colors",

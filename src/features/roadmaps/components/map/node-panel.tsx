@@ -1,6 +1,8 @@
 "use client"; // Panel interactivo del nodo seleccionado.
 
 import { X } from "lucide-react";
+import { format } from "@/lib/i18n/format";
+import { useI18n } from "@/lib/i18n/provider";
 import { deriveStatus, nodePercent, type RoadmapNodeView } from "../../utils/node-status";
 import { ConceptChecklist } from "./concept-checklist";
 import { NodePanelActions } from "./node-panel-actions";
@@ -21,6 +23,8 @@ const SECTION_TITLE = "mb-2 font-mono text-xs font-medium uppercase tracking-[0.
 
 /** Panel lateral (escritorio) u hoja inferior (móvil) con el detalle y el progreso del nodo. */
 export function NodePanel({ node, byId, pending, error, onUpdate, onSelect, onClose }: NodePanelProps) {
+  const { t: dict } = useI18n();
+  const t = dict.map;
   const status = deriveStatus(node, byId);
   const percent = nodePercent(node);
   const missing = node.requires
@@ -36,7 +40,7 @@ export function NodePanel({ node, byId, pending, error, onUpdate, onSelect, onCl
 
   return (
     <aside
-      aria-label={`Detalle: ${node.title}`}
+      aria-label={format(t.panelAria, { title: node.title })}
       className={
         "absolute inset-x-0 bottom-0 z-10 max-h-[70%] animate-fade-up overflow-y-auto rounded-t-2xl border-t " +
         "border-border-strong bg-surface-raised/95 p-5 shadow-float backdrop-blur-md " +
@@ -48,13 +52,13 @@ export function NodePanel({ node, byId, pending, error, onUpdate, onSelect, onCl
           <NodeIconView icon={node.icon} className="size-5 text-accent" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="font-mono text-xs text-subtle">{node.difficulty}</p>
+          <p className="font-mono text-xs text-subtle">{dict.common.levels[node.difficulty]}</p>
           <h2 className="font-display text-xl font-medium leading-tight text-foreground">{node.title}</h2>
         </div>
         <button
           type="button"
           onClick={onClose}
-          aria-label="Cerrar panel"
+          aria-label={t.close}
           className="rounded-sm p-1 text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
         >
           <X aria-hidden="true" className="size-5" />
@@ -64,7 +68,7 @@ export function NodePanel({ node, byId, pending, error, onUpdate, onSelect, onCl
       <div className="mt-5 space-y-2">
         <div className="flex items-center justify-between">
           <StatusBadge status={status} />
-          <span className="text-sm text-muted-foreground">{percent}% completado</span>
+          <span className="text-sm text-muted-foreground">{format(t.percentDone, { percent })}</span>
         </div>
         <div className="h-1.5 overflow-hidden rounded-full bg-border-strong" aria-hidden="true">
           <div
@@ -78,7 +82,7 @@ export function NodePanel({ node, byId, pending, error, onUpdate, onSelect, onCl
 
       {missing.length > 0 ? (
         <div className="mt-5 rounded-md border border-border bg-background/40 p-3">
-          <p className="text-sm text-muted-foreground">Completá antes:</p>
+          <p className="text-sm text-muted-foreground">{t.completeFirst}</p>
           <ul className="mt-1.5 space-y-1">
             {missing.map((req) => (
               <li key={req.id}>
@@ -92,7 +96,7 @@ export function NodePanel({ node, byId, pending, error, onUpdate, onSelect, onCl
       ) : null}
 
       <section className="mt-5">
-        <h3 className={SECTION_TITLE}>Contenido</h3>
+        <h3 className={SECTION_TITLE}>{t.content}</h3>
         <ConceptChecklist
           concepts={node.key_concepts}
           completed={node.completedConcepts}
@@ -103,7 +107,7 @@ export function NodePanel({ node, byId, pending, error, onUpdate, onSelect, onCl
 
       {node.practice ? (
         <section className="mt-5">
-          <h3 className={SECTION_TITLE}>Práctica</h3>
+          <h3 className={SECTION_TITLE}>{t.practice}</h3>
           <p className="rounded-md border border-border bg-background/40 p-3 text-sm text-body">{node.practice}</p>
         </section>
       ) : null}

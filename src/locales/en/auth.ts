@@ -1,0 +1,56 @@
+import type { Dictionary } from "../types";
+
+export const auth: Dictionary["auth"] = {
+  fields: {
+    email: "Email",
+    password: "Password",
+    newPassword: "New password",
+    confirmPassword: "Repeat your password",
+    showPassword: "Show password",
+    hidePassword: "Hide password",
+    forgot: "Forgot your password?",
+  },
+  login: {
+    title: "Log in",
+    description: "Sign in to your account to see your paths.",
+    footerText: "Don't have an account?",
+    footerLink: "Sign up",
+    submit: "Log in",
+    pending: "Logging in…",
+  },
+  signup: {
+    title: "Sign up",
+    description: "Start generating your learning paths.",
+    footerText: "Already have an account?",
+    footerLink: "Log in",
+    submit: "Create account",
+    pending: "Creating account…",
+  },
+  forgot: {
+    title: "Reset password",
+    description: "Enter your email and we'll send you a link to choose a new one.",
+    footerText: "Remembered it?",
+    footerLink: "Log in",
+    submit: "Send link",
+    pending: "Sending…",
+  },
+  reset: {
+    title: "New password",
+    description: "Choose a new password for your account.",
+    footerText: "Go back?",
+    footerLink: "Log in",
+    submit: "Save password",
+    pending: "Saving…",
+    invalidLink: "The recovery link is not valid.",
+    requestNew: "Request a new link",
+  },
+  confirm: {
+    metaTitle: "Confirm email",
+    title: "Confirm your email",
+    description: "One last step to activate your Wiseit account.",
+    submit: "Confirm my email",
+    pending: "Confirming…",
+    invalidLink: "The confirmation link is not valid.",
+    signup: "Sign up",
+  },
+};

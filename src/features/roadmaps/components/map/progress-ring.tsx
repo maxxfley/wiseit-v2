@@ -6,7 +6,8 @@ interface ProgressRingProps {
   stroke?: number;
   /** Clase de color del arco (ej. "text-success"). */
   tone?: string;
-  label?: string;
+  /** Texto accesible ya traducido (ej. "40% completado"). */
+  label: string;
   className?: string;
 }
 
@@ -18,7 +19,7 @@ export function ProgressRing({ percent, size = 32, stroke = 3, tone = "text-info
   return (
     <span
       role="img"
-      aria-label={label ?? `${clamped}% completado`}
+      aria-label={label}
       className={cn("relative inline-grid shrink-0 place-items-center", className)}
       style={{ width: size, height: size }}
     >

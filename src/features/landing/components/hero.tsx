@@ -2,28 +2,25 @@ import Link from "next/link";
 import { buttonStyles } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { RoadmapPreview } from "@/features/roadmaps/components/roadmap-preview";
+import { localizePath } from "@/lib/i18n/paths";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 
 /** El CTA siempre apunta a /signup: con sesión activa, el proxy ya redirige al dashboard. */
-export function Hero() {
+export async function Hero() {
+  const t = (await getDictionary()).landing.hero;
+  const locale = await getLocale();
   return (
     <section data-snap-section className="mx-auto grid w-full max-w-page items-center gap-12 px-6 py-section md:grid-cols-2 md:gap-16">
       <div className="animate-fade-up">
-        <p className="mb-4 font-display text-xs font-medium uppercase tracking-[0.6px] text-accent">
-          Rutas de aprendizaje visuales y personalizadas
-        </p>
-        <h1 className="font-display text-hero font-medium text-foreground">
-          Aprendé cualquier tema con una ruta clara.
-        </h1>
-        <p className="mt-6 max-w-[72ch] text-lg text-muted-foreground">
-          Escribí lo que querés dominar y Wiseit arma un recorrido paso a paso, ordenado de
-          Básico a Avanzado, para que sepas siempre qué estudiar después.
-        </p>
+        <p className="mb-4 font-display text-xs font-medium uppercase tracking-[0.6px] text-accent">{t.eyebrow}</p>
+        <h1 className="font-display text-hero font-medium text-foreground">{t.title}</h1>
+        <p className="mt-6 max-w-[72ch] text-lg text-muted-foreground">{t.body}</p>
         <div className="mt-8 flex flex-wrap gap-4">
-          <Link href={ROUTES.signup} className={buttonStyles("primary")}>
-            Crear mi primera ruta
+          <Link href={localizePath(locale, ROUTES.signup)} className={buttonStyles("primary")}>
+            {t.primaryCta}
           </Link>
-          <Link href={ROUTES.login} className={buttonStyles("secondary")}>
-            Ya tengo cuenta
+          <Link href={localizePath(locale, ROUTES.login)} className={buttonStyles("secondary")}>
+            {t.secondaryCta}
           </Link>
         </div>
       </div>
