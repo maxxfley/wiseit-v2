@@ -3,6 +3,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import type { Dictionary } from "@/locales/types";
 import type { Locale } from "./config";
+import { translateCode } from "./format";
 import { localizePath } from "./paths";
 
 interface I18nValue {
@@ -26,9 +27,16 @@ export function I18nProvider({ locale, dictionary, children }: I18nProviderProps
   return <I18nContext.Provider value={{ locale, t: dictionary }}>{children}</I18nContext.Provider>;
 }
 
-/** Idioma, textos y un helper para armar links con el prefijo de idioma. */
+/**
+ * Idioma, textos y helpers: `href` antepone el idioma a una ruta; `message` traduce la clave que
+ * devuelve una Server Action y, si no la reconoce, muestra el mensaje genérico (nunca un aviso vacío).
+ */
 export function useI18n() {
   const value = useContext(I18nContext);
   if (!value) throw new Error("[i18n] useI18n debe usarse dentro de <I18nProvider>");
-  return { ...value, href: (path: string) => localizePath(value.locale, path) };
+  return {
+    ...value,
+    href: (path: string) => localizePath(value.locale, path),
+    message: (key: string | undefined) => translateCode(value.t.messages, key, value.t.messages.generic),
+  };
 }

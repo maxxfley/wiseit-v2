@@ -11,7 +11,7 @@ import { generateRoadmapAction } from "../actions/generate-roadmap";
 import { INITIAL_GENERATE_STATE } from "../types";
 
 export function GenerateForm() {
-  const { t } = useI18n();
+  const { t, message } = useI18n();
   const copy = t.roadmaps.dashboard;
   const [state, formAction] = useActionState(generateRoadmapAction, INITIAL_GENERATE_STATE);
   const topicErrors = state.fieldErrors?.topic?.map((code) => translateCode(t.validation, code, t.messages.generic));
@@ -36,7 +36,7 @@ export function GenerateForm() {
         </div>
         {state.status === "error" && state.message ? (
           <p role="alert" className="text-sm text-danger">
-            {format(t.messages[state.message], { limit: AI_LIMITS.dailyGenerations })}
+            {format(message(state.message), { limit: AI_LIMITS.dailyGenerations })}
           </p>
         ) : null}
         <SubmitButton pendingLabel={copy.generating}>{copy.generate}</SubmitButton>

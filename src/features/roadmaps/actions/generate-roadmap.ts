@@ -43,6 +43,7 @@ export async function generateRoadmapAction(
 
   // La ruta se genera en el idioma de la interfaz desde la que se pidió.
   const locale = await getActionLocale();
+  console.info("[roadmaps/generate] Generando ruta", { locale }); // diagnóstico: idioma pedido a la IA
   const result = await generateRoadmap(topic, locale);
   if (!result.ok) return error(FAILURE_MESSAGES[result.reason]);
 
