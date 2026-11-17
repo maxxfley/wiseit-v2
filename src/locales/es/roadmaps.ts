@@ -1,0 +1,41 @@
+export const roadmaps = {
+  dashboard: {
+    title: "Dashboard",
+    createHeading: "Crear una ruta",
+    topicLabel: "¿Qué querés aprender?",
+    topicPlaceholder: "Ej: PostgreSQL, teoría musical, fotografía…",
+    generate: "Generar ruta",
+    generating: "Generando tu ruta…",
+    remaining: "Te quedan {remaining} de {limit} intentos hoy.",
+    recentHeading: "Tus últimas rutas",
+    viewAll: "Ver todas",
+  },
+  list: {
+    title: "Mis rutas",
+    emptyTitle: "Todavía no tenés rutas.",
+    emptyBody: "Elegí un tema y generamos tu primera ruta de aprendizaje.",
+    emptyCta: "Crear una ruta",
+    steps: { one: "{count} paso", few: "{count} pasos", many: "{count} pasos", other: "{count} pasos" },
+  },
+  delete: {
+    button: "Eliminar",
+    aria: "Eliminar {title}",
+    title: "¿Eliminar esta ruta?",
+    body: "«{title}» y todos sus pasos se borrarán de forma permanente. Esto no libera tus intentos del día.",
+    cancel: "Cancelar",
+    pending: "Eliminando…",
+  },
+  detail: {
+    metaTitle: "Ruta de aprendizaje",
+    back: "← Mis rutas",
+    topics: { one: "{count} tema", few: "{count} temas", many: "{count} temas", other: "{count} temas" },
+    created: "creada el {date}",
+    legacy:
+      "Esta ruta es anterior al mapa interactivo, así que solo se muestra como lista. Generala de nuevo para verla como mapa y registrar tu progreso.",
+    notFoundTitle: "No encontramos esa ruta",
+    notFoundBody: "Puede que haya sido eliminada o que no te pertenezca.",
+    notFoundBack: "Volver a mis rutas",
+  },
+  timeline: { step: "Paso {n}", keyConcepts: "Conceptos clave", practice: "Practicá: " },
+  views: { label: "Vista de la ruta", list: "Lista", map: "Mapa interactivo" },
+};

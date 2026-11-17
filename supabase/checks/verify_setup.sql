@@ -87,11 +87,22 @@ select 'create_roadmap_with_nodes v1 (3 argumentos) eliminado',
        to_regprocedure('public.create_roadmap_with_nodes(text, text, jsonb)') is null
 
 union all
+select 'create_roadmap_with_nodes v2 (4 argumentos) eliminado',
+       to_regprocedure('public.create_roadmap_with_nodes(text, text, text, jsonb)') is null
+
+union all
+select 'roadmaps.language existe con check de formato',
+       exists (
+         select 1 from pg_constraint c
+         where c.conrelid = 'public.roadmaps'::regclass and c.conname = 'roadmaps_language_format'
+       )
+
+union all
 select 'EXECUTE solo para authenticated: ' || f.fname,
        has_function_privilege('authenticated', f.sig, 'execute')
        and not has_function_privilege('anon', f.sig, 'execute')
 from (values
   ('reserve_generation', 'public.reserve_generation(integer)'),
-  ('create_roadmap_with_nodes', 'public.create_roadmap_with_nodes(text, text, text, jsonb)'),
+  ('create_roadmap_with_nodes', 'public.create_roadmap_with_nodes(text, text, text, jsonb, text)'),
   ('update_node_progress', 'public.update_node_progress(uuid, smallint[], boolean)')
 ) as f(fname, sig);
