@@ -17,18 +17,20 @@ interface RoadmapViewsProps {
   roadmapId: string;
   theme: RoadmapTheme;
   nodes: RoadmapNodeView[];
+  /** Premium: puede guardar progreso (el bloqueo real está en la base). */
+  canTrackProgress: boolean;
   /** Vista de lista ya renderizada en el servidor (timeline). */
   list: ReactNode;
 }
 
-export function RoadmapViews({ roadmapId, theme, nodes, list }: RoadmapViewsProps) {
+export function RoadmapViews({ roadmapId, theme, nodes, canTrackProgress, list }: RoadmapViewsProps) {
   const [view, setView] = useState<RoadmapView>("list"); // La lista es la vista inicial; el mapa se carga al pedirlo.
 
   return (
     <div className="space-y-4">
       <ViewTabs value={view} onChange={setView} />
       <div role="tabpanel">
-        {view === "map" ? <RoadmapMap roadmapId={roadmapId} theme={theme} nodes={nodes} /> : list}
+        {view === "map" ? <RoadmapMap roadmapId={roadmapId} theme={theme} nodes={nodes} canTrackProgress={canTrackProgress} /> : list}
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ export const messages: Dictionary["messages"] = {
   aiRateLimited: "The AI service is busy. Try again in a minute.",
   aiUnavailable: "We couldn't generate the path right now. Please try again later.",
   aiInvalidOutput: "The AI returned an invalid path. Try another topic or retry.",
-  quotaExhausted: "You've reached the limit of {limit} paths per day. Come back tomorrow.",
+  quotaExhausted: "You've reached your daily path limit. Come back tomorrow.",
   quotaError: "We couldn't check your quota. Please try again later.",
   saveFailed: "We generated the path but couldn't save it. Please try again.",
   roadmapInvalid: "Invalid path.",
@@ -30,6 +30,9 @@ export const messages: Dictionary["messages"] = {
   nodeNotFound: "We couldn't find this topic.",
   progressInvalid: "The progress sent is not valid.",
   progressFailed: "We couldn't save your progress. Please try again.",
+  // Plans
+  premiumRequired: "Saving progress is a Wiseit Premium feature.",
+  roadmapLimit: "You've reached the free plan's saved path limit. Delete one to create another.",
 };
 
 export const validation: Dictionary["validation"] = {

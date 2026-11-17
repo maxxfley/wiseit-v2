@@ -8,6 +8,8 @@ export const roadmaps = {
     generate: "Generar ruta",
     generating: "Generando tu ruta…",
     remaining: "Te quedan {remaining} de {limit} intentos hoy.",
+    limitNotice: "Tenés {limit} rutas guardadas, el máximo del plan gratis. Borrá una para crear otra.",
+    limitLink: "Ir a Mis rutas",
     recentHeading: "Tus últimas rutas",
     viewAll: "Ver todas",
   },

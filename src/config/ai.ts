@@ -1,7 +1,6 @@
 /** Límites del motor de generación. Valores de negocio centralizados (no hardcodear en la lógica). */
 export const AI_LIMITS = {
-  /** Intentos de generación por usuario y día (UTC). Se miden en `ai_usage`, no en rutas guardadas. */
-  dailyGenerations: 6,
+  // Las cuotas diarias dependen del plan: ver `PLAN_LIMITS` en config/plans.ts.
   topicMinLength: 2,
   topicMaxLength: 200,
   minNodes: 9,
