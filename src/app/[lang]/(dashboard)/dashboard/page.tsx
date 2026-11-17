@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GenerateForm } from "@/features/roadmaps/components/generate-form";
+import { GenerateFormWithDraft } from "@/features/roadmaps/components/generate-form-with-draft";
 import { RecentRoadmaps } from "@/features/roadmaps/components/recent-roadmaps";
 import { RemainingAttempts } from "@/features/roadmaps/components/remaining-attempts";
 import { RoadmapListSkeleton } from "@/features/roadmaps/components/roadmap-list-skeleton";
@@ -28,7 +28,10 @@ export default async function DashboardPage() {
         <h2 id="crear-ruta" className="font-display text-2xl font-medium tracking-[-0.5px] text-foreground">
           {t.createHeading}
         </h2>
-        <GenerateForm />
+        {/* Lee la cookie del tema escrito en la landing: con `cacheComponents` debe ir en <Suspense>. */}
+        <Suspense fallback={<Skeleton className="h-36 w-full max-w-xl" />}>
+          <GenerateFormWithDraft />
+        </Suspense>
         <Suspense fallback={<Skeleton className="h-5 w-48" />}>
           <RemainingAttempts />
         </Suspense>

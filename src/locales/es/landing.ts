@@ -5,6 +5,9 @@ export const landing = {
     body: "Escribí lo que querés dominar y Wiseit arma un recorrido paso a paso, ordenado de Básico a Avanzado, para que sepas siempre qué estudiar después.",
     primaryCta: "Crear mi primera ruta",
     secondaryCta: "Ya tengo cuenta",
+    topicLabel: "Tema que querés aprender",
+    topicPlaceholder: "Creá la tuya: ¿qué querés aprender?",
+    topicSubmit: "Crear mi ruta",
   },
   preview: {
     label: "Ruta · PostgreSQL",

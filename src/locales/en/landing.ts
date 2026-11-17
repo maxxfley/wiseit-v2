@@ -7,6 +7,9 @@ export const landing: Dictionary["landing"] = {
     body: "Write what you want to master and Wiseit builds a step-by-step journey, ordered from Basic to Advanced, so you always know what to study next.",
     primaryCta: "Create my first path",
     secondaryCta: "I already have an account",
+    topicLabel: "Topic you want to learn",
+    topicPlaceholder: "Create yours: what do you want to learn?",
+    topicSubmit: "Create my path",
   },
   preview: {
     label: "Path · PostgreSQL",
