@@ -42,9 +42,21 @@ export async function POST(request: Request): Promise<Response> {
   const body = await request.text();
   if (!signature || !body) return new Response("Bad request", { status: 400 });
 
+  // Configuración aparte de la firma: si falta una variable es un error NUESTRO (500, Paddle
+  // reintenta y el log lo dice claro), no una firma inválida (401, que se descarta).
+  let paddle: ReturnType<typeof getPaddle>;
+  let secret: string;
+  try {
+    paddle = getPaddle();
+    secret = getPaddleEnv().PADDLE_WEBHOOK_SECRET;
+  } catch (error) {
+    console.error(`${LOG} Configuración de Paddle inválida`, { error: error instanceof Error ? error.message : "desconocido" });
+    return new Response("Server misconfigured", { status: 500 });
+  }
+
   let event: EventEntity;
   try {
-    event = await getPaddle().webhooks.unmarshal(body, getPaddleEnv().PADDLE_WEBHOOK_SECRET, signature);
+    event = await paddle.webhooks.unmarshal(body, secret, signature);
   } catch (error) {
     console.warn(`${LOG} Firma inválida o cuerpo ilegible`, { error: error instanceof Error ? error.message : "desconocido" });
     return new Response("Invalid signature", { status: 401 });
