@@ -38,7 +38,7 @@ export function NeuralNetwork({ step, total, label }: NeuralNetworkProps) {
   const done = step >= total;
 
   return (
-    <div aria-hidden="true" className="flex flex-col items-center gap-6">
+    <div aria-hidden="true" className="flex flex-col items-center gap-4">
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full max-w-[22rem] overflow-visible">
         {COLUMNS.slice(1).map((column, offset) => {
           const lit = layerLit(offset + 1, step);
@@ -53,7 +53,7 @@ export function NeuralNetwork({ step, total, label }: NeuralNetworkProps) {
                 strokeWidth={1}
                 className={cn(
                   "transition-[stroke,opacity] duration-700",
-                  lit ? "stroke-primary opacity-50" : "stroke-border-strong opacity-40",
+                  lit ? "stroke-accent opacity-70" : "stroke-border-strong opacity-40",
                 )}
               />
             )),
@@ -74,7 +74,7 @@ export function NeuralNetwork({ step, total, label }: NeuralNetworkProps) {
                 className={cn(
                   "transition-[fill,stroke] duration-700",
                   lit
-                    ? "animate-twinkle fill-primary stroke-accent [filter:drop-shadow(0_0_6px_var(--primary))] motion-reduce:animate-none"
+                    ? "animate-twinkle fill-primary stroke-accent [filter:drop-shadow(0_0_4px_var(--accent))_drop-shadow(0_0_12px_var(--primary))] motion-reduce:animate-none"
                     : "fill-surface-raised stroke-border-strong",
                 )}
               />
@@ -83,7 +83,7 @@ export function NeuralNetwork({ step, total, label }: NeuralNetworkProps) {
         )}
       </svg>
       <div className="flex items-center gap-4">
-        <span className="relative grid place-items-center">
+        <span className="relative grid place-items-center [filter:drop-shadow(0_0_8px_var(--primary))]">
           {/* 1400 ms = STEP_MS de how-it-works-timeline.tsx: el anillo avanza al ritmo del riel. */}
           <ProgressRing percent={percent} size={64} stroke={5} tone="text-primary" label={label} durationClassName="duration-[1400ms]" />
           <span className="absolute inset-0 grid place-items-center font-mono text-sm font-medium text-foreground">
