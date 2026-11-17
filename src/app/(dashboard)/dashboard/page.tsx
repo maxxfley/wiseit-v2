@@ -8,6 +8,14 @@ import { RoadmapListSkeleton } from "@/features/roadmaps/components/roadmap-list
 
 export const metadata: Metadata = { title: "Dashboard" };
 
+/**
+ * Tope de ejecución (s) para las Server Actions de esta página (Next lo exige a nivel
+ * de página y como literal estático). Peor caso de `generateRoadmapAction`: 2 intentos
+ * por salida inválida × 2 llamadas del SDK por timeout × 60 s (`AI_LIMITS`) = 240 s.
+ * 300 s es el máximo del plan Hobby de Vercel con Fluid Compute.
+ */
+export const maxDuration = 300;
+
 export default function DashboardPage() {
   return (
     <div className="mx-auto w-full max-w-4xl space-y-12">
