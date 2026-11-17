@@ -50,5 +50,12 @@ export const plans = {
     done: "¡Listo! Ya sos Premium. Disfrutalo.",
     slow: "El pago se registró, pero la activación está tardando. Recargá la página en un minuto.",
   },
+  cancellation: {
+    endsOn: "Tu Premium termina el {date}.",
+    detail: "Cancelaste la renovación: seguís con todas las funciones hasta esa fecha y después pasás al plan gratis.",
+    resume: "Reactivar Premium",
+    resuming: "Reactivando…",
+    resumed: "¡Listo! Tu Premium se va a renovar de nuevo.",
+  },
   upsell: "Ver Premium",
 };

@@ -37,6 +37,7 @@ export const messages: Dictionary["messages"] = {
   checkoutFailed: "Не удалось начать оплату. Попробуйте ещё раз через несколько минут.",
   alreadyPremium: "У вас уже активен Premium.",
   portalFailed: "Не удалось открыть управление подпиской. Попробуйте ещё раз.",
+  resumeFailed: "Не удалось возобновить подписку. Попробуйте через «Управлять подпиской».",
 };
 
 export const validation: Dictionary["validation"] = {
