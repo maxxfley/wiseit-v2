@@ -42,6 +42,7 @@ export const messages = {
   checkoutFailed: "No pudimos iniciar el pago. Intentá de nuevo en unos minutos.",
   alreadyPremium: "Ya tenés Premium activo.",
   portalFailed: "No pudimos abrir la gestión de tu suscripción. Intentá de nuevo.",
+  resumeFailed: "No pudimos reactivar tu suscripción. Probá desde \"Gestionar suscripción\".",
 };
 
 /** Mensajes de validación de Zod: los esquemas usan estas claves como `message`. */

@@ -51,5 +51,12 @@ export const plans: Dictionary["plans"] = {
     done: "All set! You're Premium now. Enjoy.",
     slow: "Your payment went through, but activation is taking a while. Reload the page in a minute.",
   },
+  cancellation: {
+    endsOn: "Your Premium ends on {date}.",
+    detail: "You canceled the renewal: you keep every feature until then, and then you move to the free plan.",
+    resume: "Reactivate Premium",
+    resuming: "Reactivating…",
+    resumed: "All set! Your Premium will renew again.",
+  },
   upsell: "See Premium",
 };

@@ -37,6 +37,7 @@ export const messages: Dictionary["messages"] = {
   checkoutFailed: "We couldn't start the checkout. Please try again in a few minutes.",
   alreadyPremium: "You already have an active Premium plan.",
   portalFailed: "We couldn't open your subscription settings. Please try again.",
+  resumeFailed: "We couldn't reactivate your subscription. Try from \"Manage subscription\".",
 };
 
 export const validation: Dictionary["validation"] = {
