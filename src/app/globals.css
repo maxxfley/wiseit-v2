@@ -78,6 +78,17 @@
   --shadow-float: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 
   --animate-fade-up: fade-up 420ms ease-out both;
+  /* Panel lateral del menú móvil. */
+  --animate-slide-in: slide-in 220ms ease-out both;
+
+  @keyframes slide-in {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
 
   @keyframes fade-up {
     from {

@@ -2,32 +2,57 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LocaleSwitcher } from "./locale-switcher";
 import { Logo } from "./logo";
+import { MobileMenu } from "./mobile-menu";
 import { SidebarNav } from "./sidebar-nav";
 import { SidebarUser } from "./sidebar-user";
 
-/** Sidebar en escritorio; barra horizontal superior en móvil (mismas piezas, otra disposición). */
+// usePathname (nav, selector de idioma) es dato de runtime en rutas dinámicas y la sesión lee
+// cookies: todo va en Suspense. `getCurrentUser` usa `cache`, así que las dos barras comparten lectura.
+const nav = (
+  <Suspense fallback={<Skeleton className="h-20 w-full" />}>
+    <SidebarNav />
+  </Suspense>
+);
+const user = (
+  <Suspense fallback={<Skeleton className="h-24 w-full" />}>
+    <SidebarUser />
+  </Suspense>
+);
+const localeSwitcher = (
+  <Suspense fallback={<Skeleton className="h-8 w-14" />}>
+    <LocaleSwitcher />
+  </Suspense>
+);
+
+/** Celular: ☰ · logo centrado · idioma. El menú abre un panel lateral con la nav y la sesión. */
+function MobileTopBar() {
+  return (
+    <header className="sticky top-0 z-(--z-nav) grid grid-cols-[1fr_auto_1fr] items-center border-b border-border bg-surface px-4 py-3 md:hidden">
+      <div className="justify-self-start">
+        <MobileMenu header={<Logo />}>
+          {nav}
+          <div className="mt-auto">{user}</div>
+        </MobileMenu>
+      </div>
+      <Logo />
+      <div className="justify-self-end">{localeSwitcher}</div>
+    </header>
+  );
+}
+
+/** Escritorio y tablet (≥ md): sidebar fijo a la izquierda. */
 export function DashboardSidebar() {
   return (
-    <aside
-      className={
-        "flex items-center gap-4 overflow-x-auto border-b border-border bg-surface px-4 py-3 " +
-        "md:sticky md:top-0 md:h-[100dvh] md:w-60 md:shrink-0 md:flex-col md:items-stretch " +
-        "md:gap-8 md:overflow-visible md:border-b-0 md:border-r md:px-4 md:py-6"
-      }
-    >
-      <Logo />
-      {/* usePathname es dato de runtime en rutas dinámicas: también va en Suspense. */}
-      <Suspense fallback={<Skeleton className="h-9 w-40 md:h-20 md:w-full" />}>
-        <SidebarNav />
-      </Suspense>
-      <div className="ml-auto flex items-center gap-3 md:ml-0 md:mt-auto md:flex-col md:items-stretch">
-        <Suspense fallback={<Skeleton className="h-6 w-24" />}>
-          <LocaleSwitcher />
-        </Suspense>
-        <Suspense fallback={<Skeleton className="h-10 w-20 md:h-24 md:w-full" />}>
-          <SidebarUser />
-        </Suspense>
-      </div>
-    </aside>
+    <>
+      <MobileTopBar />
+      <aside className="sticky top-0 hidden h-[100dvh] w-60 shrink-0 flex-col gap-8 border-r border-border bg-surface px-4 py-6 md:flex">
+        <Logo />
+        {nav}
+        <div className="mt-auto flex flex-col items-start gap-3">
+          {localeSwitcher}
+          <div className="w-full">{user}</div>
+        </div>
+      </aside>
+    </>
   );
 }

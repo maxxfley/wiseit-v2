@@ -13,6 +13,8 @@ export const common: Dictionary["common"] = {
     signup: "Sign up",
     logout: "Log out",
     userFallback: "User",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
   },
   language: { label: "Language" },
   footer: { tagline: "AI learning paths, from Basic to Advanced." },
