@@ -9,9 +9,12 @@ import { useAnimatedHeight } from "../hooks/use-animated-height";
 /** Íconos y estados de la ruta de muestra: un tema completado, uno en proceso y uno bloqueado. */
 const DEMO_NODES: readonly Omit<PreviewNode, "title">[] = [
   { icon: "data", status: "completed", percent: 100 },
-  { icon: "puzzle", status: "in_progress", percent: 60 },
+  { icon: "puzzle", status: "in_progress", percent: 0 }, // El % se calcula con los conceptos tildados.
   { icon: "chart", status: "locked", percent: 0 },
 ];
+
+/** Conceptos tildados del nodo en proceso (de los 3 del diccionario): 2 de 3 → 67%. */
+const DEMO_CONCEPTS_DONE = 2;
 
 interface LandingRoadmapDemoProps {
   /** Vista de lista ya renderizada en el servidor. */
@@ -23,8 +26,14 @@ export function LandingRoadmapDemo({ list }: LandingRoadmapDemoProps) {
   const { t } = useI18n();
   const [view, setView] = useState<RoadmapView>("list");
   const { ref, height } = useAnimatedHeight<HTMLDivElement>();
+  // El nodo en proceso se muestra desplegado: sus conceptos explican el porcentaje del anillo.
+  const concepts = t.landing.preview.concepts.map((label, index) => ({ label, done: index < DEMO_CONCEPTS_DONE }));
+  const percent = Math.round((DEMO_CONCEPTS_DONE / concepts.length) * 100);
   // Los títulos son los mismos de la lista: las dos vistas cuentan la misma ruta.
-  const nodes = DEMO_NODES.map((node, index) => ({ ...node, title: t.landing.preview.steps[index] ?? "" }));
+  const nodes: PreviewNode[] = DEMO_NODES.map((node, index) => {
+    const base = { ...node, title: t.landing.preview.steps[index] ?? "" };
+    return node.status === "in_progress" ? { ...base, concepts, percent } : base;
+  });
 
   return (
     <div className="mt-4 space-y-4">
