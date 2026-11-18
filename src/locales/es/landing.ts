@@ -53,9 +53,4 @@ export const landing = {
       description: "Listá tus rutas, abrí el detalle como una línea de tiempo y eliminá las que ya no necesites.",
     },
   },
-  finalCta: {
-    title: "Empezá tu primera ruta hoy",
-    body: "Crear una cuenta es gratis y te toma menos de un minuto.",
-    cta: "Crear cuenta",
-  },
 };
