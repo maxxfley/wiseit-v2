@@ -1,3 +1,4 @@
+import { NodeMaterials } from "@/features/materials/components/node-materials";
 import { format } from "@/lib/i18n/format";
 import { getDictionary } from "@/lib/i18n/server";
 import type { Dictionary } from "@/locales/types";
@@ -28,6 +29,9 @@ function NodeItem({ node, t }: { node: RoadmapNodeView; t: Dictionary["roadmaps"
           {node.practice}
         </p>
       ) : null}
+      <div className="mt-3 max-w-[72ch]">
+        <NodeMaterials nodeId={node.id} title={node.title} inline />
+      </div>
     </li>
   );
 }

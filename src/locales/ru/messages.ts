@@ -38,6 +38,10 @@ export const messages: Dictionary["messages"] = {
   alreadyPremium: "У вас уже активен Premium.",
   portalFailed: "Не удалось открыть управление подпиской. Попробуйте ещё раз.",
   resumeFailed: "Не удалось возобновить подписку. Попробуйте через «Управлять подпиской».",
+  // Найти материалы
+  materialsExhausted: "Вы использовали все поиски материалов на сегодня. Возвращайтесь завтра.",
+  materialsFailed: "Сейчас не удалось найти материалы. Попробуйте позже.",
+  materialsRateLimited: "Сервис поиска перегружен. Попробуйте через минуту.",
 };
 
 export const validation: Dictionary["validation"] = {

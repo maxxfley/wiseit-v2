@@ -1,12 +1,12 @@
 import "server-only";
-import Groq from "groq-sdk";
 import { AI_LIMITS } from "@/config/ai";
+import { aiErrorDetail, classifyAiError, type AiFailure } from "@/lib/ai/errors";
 import { getGroqClient } from "@/lib/ai/groq";
 import type { Locale } from "@/lib/i18n/config";
 import { roadmapJsonSchema, roadmapOutputSchema, type RoadmapOutput } from "../schemas/roadmap-output.schema";
 import { buildSystemPrompt, buildUserMessage } from "./prompt";
 
-export type GenerationFailure = "rate_limited" | "unavailable" | "invalid_output";
+export type GenerationFailure = AiFailure;
 
 /** Tokens consumidos (sumando reintentos): se guardan en `ai_usage` para medir el costo real. */
 export interface GenerationUsage {
@@ -19,15 +19,6 @@ export type GenerationResult =
   | { ok: false; reason: GenerationFailure; usage: GenerationUsage };
 
 const NO_USAGE: GenerationUsage = { input: 0, output: 0 };
-
-function classifyError(error: unknown): GenerationFailure {
-  if (error instanceof SyntaxError) return "invalid_output"; // JSON.parse de una respuesta truncada
-  // Groq valida el JSON Schema en su servidor y responde 400 si el modelo no lo cumple:
-  // es una salida inválida del modelo (se reintenta gratis), no una caída del servicio.
-  if (error instanceof Groq.BadRequestError && error.message.includes("json_validate_failed")) return "invalid_output";
-  if (error instanceof Groq.RateLimitError) return "rate_limited";
-  return "unavailable";
-}
 
 /** Un intento: pide la ruta a Groq con Structured Outputs estricto y la valida con Zod. */
 async function requestRoadmap(topic: string, locale: Locale, model: string, attempt: number): Promise<GenerationResult> {
@@ -58,9 +49,8 @@ async function requestRoadmap(topic: string, locale: Locale, model: string, atte
     }
     return { ok: true, roadmap: parsed.data, usage };
   } catch (error) {
-    const detail = error instanceof Groq.APIError ? { status: error.status, message: error.message } : error;
-    console.error("[roadmaps/generate] Fallo al llamar a Groq", { attempt, detail });
-    return { ok: false, reason: classifyError(error), usage: NO_USAGE };
+    console.error("[roadmaps/generate] Fallo al llamar a Groq", { attempt, detail: aiErrorDetail(error) });
+    return { ok: false, reason: classifyAiError(error), usage: NO_USAGE };
   }
 }
 

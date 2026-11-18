@@ -1,6 +1,6 @@
 -- Smoke test: trigger de profiles, aislamiento RLS, cuota, RPC de creación, grafo + progreso (Paso 6)
 -- y planes (Paso 7a: Premium, cuotas por tipo, límite de rutas, bloqueo de progreso, past_due;
--- Paso 7b: eventos del webhook de Paddle).
+-- Paso 7b: eventos del webhook de Paddle; Paso 7c: búsqueda de material).
 -- Todo ocurre dentro de una transacción que termina en ROLLBACK: no deja datos.
 -- Si algo falla, aborta con 'FALLO: ...'. Si todo pasa, devuelve 'OK'.
 
@@ -348,9 +348,94 @@ begin
     end;
     execute 'reset role';
   end;
+
+  -- 15. (Paso 7c) Buscar material: caché, cupo gratis (1 por ruta, N por cuenta, borrar no
+  -- devuelve), cuota Premium, nodos ajenos y escritura directa bloqueada.
+  declare
+    r1 uuid; r2 uuid; r3 uuid; n1 uuid; n2 uuid; m1 uuid; m3 uuid; pa1 uuid; pa2 uuid;
+    st text; u uuid; used int;
+  begin
+    -- Estado conocido: B gratis y sin rutas; A Premium.
+    delete from public.subscriptions where user_id = user_b;
+    delete from public.roadmaps where user_id = user_b;
+    update public.subscriptions set status = 'active', past_due_since = null,
+      current_period_end = now() + interval '30 days' where user_id = user_a;
+
+    perform set_config('request.jwt.claims', json_build_object('sub', user_b, 'role', 'authenticated')::text, true);
+    execute 'set local role authenticated';
+    insert into public.roadmaps (user_id, topic, title) values (user_b, 'Material', 'M1') returning id into r1;
+    insert into public.nodes (roadmap_id, title, description, difficulty, order_index)
+    values (r1, 'n1', 'd', 'Básico', 0) returning id into n1;
+    insert into public.nodes (roadmap_id, title, description, difficulty, order_index)
+    values (r1, 'n2', 'd', 'Básico', 1) returning id into n2;
+    insert into public.roadmaps (user_id, topic, title) values (user_b, 'Material', 'M2') returning id into r2;
+    insert into public.nodes (roadmap_id, title, description, difficulty, order_index)
+    values (r2, 'm1', 'd', 'Básico', 0) returning id into m1;
+
+    select s.status, s.usage_id into st, u from public.reserve_material_search(n1, 15, 2) s;
+    if st <> 'granted' or u is null then raise exception 'FALLO material: gratis primer link = %', st; end if;
+    select s.status into st from public.reserve_material_search(n2, 15, 2) s;
+    if st <> 'roadmap_used' then raise exception 'FALLO material: segundo nodo de la misma ruta = %', st; end if;
+
+    perform public.save_node_materials(u, n1, '[{"url":"https://example.com"}]', 'm');
+    perform public.save_node_materials(u, n1, '[{"url":"https://example.org"}]', 'm'); -- repetido: no hace nada
+    select s.status into st from public.reserve_material_search(n1, 15, 2) s;
+    if st <> 'cached' then raise exception 'FALLO material: nodo con caché = %', st; end if;
+    select count(*) into n from public.node_materials where node_id = n1 and items->0->>'url' = 'https://example.com';
+    if n <> 1 then raise exception 'FALLO material: caché no guardada o pisada'; end if;
+
+    -- Cupo por cuenta: con tope 1 ya está usado; borrar la ruta no lo devuelve.
+    select s.status into st from public.reserve_material_search(m1, 15, 1) s;
+    if st <> 'account_used' then raise exception 'FALLO material: tope por cuenta = %', st; end if;
+    delete from public.roadmaps where id = r1;
+    select s.status into st from public.reserve_material_search(m1, 15, 1) s;
+    if st <> 'account_used' then raise exception 'FALLO material: borrar la ruta devolvió el link (%)', st; end if;
+    select s.status into st from public.reserve_material_search(m1, 15, 2) s;
+    if st <> 'granted' then raise exception 'FALLO material: segundo link de la cuenta = %', st; end if;
+    insert into public.roadmaps (user_id, topic, title) values (user_b, 'Material', 'M3') returning id into r3;
+    insert into public.nodes (roadmap_id, title, description, difficulty, order_index)
+    values (r3, 'm3', 'd', 'Básico', 0) returning id into m3;
+    select s.status into st from public.reserve_material_search(m3, 15, 2) s;
+    if st <> 'account_used' then raise exception 'FALLO material: tercer link con tope 2 = %', st; end if;
+
+    -- Escritura directa bloqueada.
+    begin
+      insert into public.node_materials (node_id, roadmap_id, user_id, usage_id, items, model)
+      values (m3, r3, user_b, u, '[{"url":"https://evil.example"}]', 'm');
+      raise exception 'FALLO: B escribió node_materials directamente';
+    exception when insufficient_privilege then
+      raise notice 'ok: node_materials sin escritura directa';
+    end;
+
+    -- A (Premium): no puede usar nodos ajenos; su cuota diaria se respeta.
+    perform set_config('request.jwt.claims', json_build_object('sub', user_a, 'role', 'authenticated')::text, true);
+    select s.status into st from public.reserve_material_search(m3, 15, 4) s;
+    if st <> 'not_found' then raise exception 'FALLO material: A reservó en un nodo de B (%)', st; end if;
+    begin
+      perform public.save_node_materials(u, m3, '[{"url":"https://example.com"}]', 'm');
+      raise exception 'FALLO: A guardó material en un nodo de B';
+    exception when insufficient_privilege then
+      raise notice 'ok: save_node_materials solo en nodos propios';
+    end;
+    select count(*) into n from public.free_material_grants;
+    if n <> 0 then raise exception 'FALLO: A ve % cupos gratis de B', n; end if;
+
+    insert into public.roadmaps (user_id, topic, title) values (user_a, 'Premium', 'P') returning id into rid;
+    insert into public.nodes (roadmap_id, title, description, difficulty, order_index)
+    values (rid, 'p1', 'd', 'Básico', 0) returning id into pa1;
+    insert into public.nodes (roadmap_id, title, description, difficulty, order_index)
+    values (rid, 'p2', 'd', 'Básico', 1) returning id into pa2;
+    select count(*) into used from public.ai_usage
+    where kind = 'material' and created_at >= date_trunc('day', now() at time zone 'utc') at time zone 'utc';
+    select s.status into st from public.reserve_material_search(pa1, used + 1, 0) s;
+    if st <> 'granted' then raise exception 'FALLO material: Premium con cuota = %', st; end if;
+    select s.status into st from public.reserve_material_search(pa2, used + 1, 0) s;
+    if st <> 'exhausted' then raise exception 'FALLO material: Premium sin cuota = %', st; end if;
+    execute 'reset role';
+  end;
 end;
 $$;
 
-select 'OK: trigger + RLS + cuota + RPC + grafo + progreso + planes + webhook verificados' as resultado;
+select 'OK: trigger + RLS + cuota + RPC + grafo + progreso + planes + webhook + material verificados' as resultado;
 
 rollback;
