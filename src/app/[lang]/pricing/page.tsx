@@ -16,7 +16,7 @@ export default function PricingPage() {
   return (
     <>
       <Navbar />
-      <main className="mx-auto w-full max-w-page flex-1 space-y-12 px-4 py-16 sm:px-6">
+      <main className="mx-auto w-full max-w-page flex-1 space-y-6 px-4 py-16 sm:px-6">
         <PricingHeader />
         <Suspense fallback={<Skeleton className="mx-auto h-[520px] w-full max-w-4xl rounded-xl" />}>
           <PricingSection />
