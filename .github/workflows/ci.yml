@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Un push nuevo cancela la corrida anterior de la misma rama: no se gastan minutos en código viejo.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Lint, tipos, tests y build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Valores de prueba: el build no se conecta a nada, así que ningún secreto real sale de tu
+    # máquina. Cumplen las validaciones de formato (URL de origen, key de 20+ caracteres).
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder-publishable-key
+      NEXT_PUBLIC_PADDLE_ENV: sandbox
+      NEXT_PUBLIC_PADDLE_CLIENT_TOKEN: test_ci_placeholder
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  database:
+    name: Migraciones y RLS (Postgres local)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DB_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      # La misma versión del CLI que usás en local (devDependency), no una distinta.
+      - run: npm ci
+      # Levanta Postgres en Docker y aplica TODAS las migraciones sobre una base vacía:
+      # si alguna depende de un cambio hecho a mano en producción, falla acá.
+      - name: Iniciar Postgres y aplicar migraciones
+        run: npx supabase db start
+      - name: Verificar políticas, funciones y permisos
+        run: |
+          # verify_setup.sql devuelve filas (chequeo, ok). Falla si alguna tiene ok = false.
+          result=$( { cat supabase/checks/verify_setup.sql; echo ';'; } | psql "$DB_URL" -v ON_ERROR_STOP=1 -At -F $'\t')
+          echo "$result"
+          if echo "$result" | grep -qP '\tf$'; then
+            echo "::error::verify_setup.sql tiene chequeos en false"
+            exit 1
+          fi
+      - name: Smoke test de RLS, cuotas, webhook y progreso
+        # Todo corre en una transacción con ROLLBACK; cualquier 'FALLO ...' aborta con error.
+        run: psql "$DB_URL" -v ON_ERROR_STOP=1 -f supabase/checks/smoke_rls.sql
+      - name: Detener Postgres
+        if: always()
+        run: npx supabase stop --no-backup
