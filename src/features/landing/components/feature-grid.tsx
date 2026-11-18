@@ -14,7 +14,8 @@ export interface FeatureItem {
 
 interface FeatureGridProps {
   items: readonly FeatureItem[];
-  badges: { free: string; premium: string };
+  badges: { free: string; premium: string; cta: string };
+  plansHref: string;
 }
 
 const ROTATE_MS = 3000;
@@ -24,7 +25,7 @@ const ROTATE_MS = 3000;
  * pantalla. Si la persona pasa el cursor, enfoca o toca una card, esa queda activa y la rotación
  * se pausa. Con "reducir movimiento" no rota: solo responde a la interacción.
  */
-export function FeatureGrid({ items, badges }: FeatureGridProps) {
+export function FeatureGrid({ items, badges, plansHref }: FeatureGridProps) {
   const [auto, setAuto] = useState<number | null>(null);
   const [engaged, setEngaged] = useState<number | null>(null);
   const ref = useRef<HTMLDivElement>(null);
@@ -61,6 +62,7 @@ export function FeatureGrid({ items, badges }: FeatureGridProps) {
           key={key}
           {...item}
           badges={badges}
+          plansHref={plansHref}
           active={activeIndex === index}
           onInteract={(isEngaged) => handleInteract(index, isEngaged)}
         />

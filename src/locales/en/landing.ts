@@ -37,7 +37,7 @@ export const landing: Dictionary["landing"] = {
     ],
   },
   features: {
-    badges: { free: "Free", premium: "Premium" },
+    badges: { free: "Free", premium: "Premium", cta: "See Premium plans" },
     items: {
       routes: {
         title: "AI learning paths",

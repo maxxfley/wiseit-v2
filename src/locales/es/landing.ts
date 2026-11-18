@@ -35,7 +35,7 @@ export const landing = {
     ],
   },
   features: {
-    badges: { free: "Gratis", premium: "Premium" },
+    badges: { free: "Gratis", premium: "Premium", cta: "Ver los planes Premium" },
     items: {
       routes: {
         title: "Rutas con IA",

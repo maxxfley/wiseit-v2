@@ -2,6 +2,7 @@ import { Compass, FolderKanban, ListChecks, Sparkles, type LucideIcon } from "lu
 import { getDictionary } from "@/lib/i18n/server";
 import type { Dictionary } from "@/locales/types";
 import { FeatureGrid } from "./feature-grid";
+import { PLANS_SECTION_ID } from "./landing-pricing";
 
 type FeatureKey = keyof Dictionary["landing"]["features"]["items"];
 
@@ -26,7 +27,7 @@ export async function Features() {
   }));
   return (
     <section data-snap-section className="mx-auto w-full max-w-page px-6 py-section">
-      <FeatureGrid items={items} badges={t.badges} />
+      <FeatureGrid items={items} badges={t.badges} plansHref={`#${PLANS_SECTION_ID}`} />
     </section>
   );
 }
