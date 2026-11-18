@@ -275,6 +275,104 @@ export type Database = {
         }
         Relationships: []
       }
+      roadmap_extensions: {
+        Row: {
+          created_at: string
+          id: string
+          node_count: number
+          roadmap_id: string
+          usage_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          node_count: number
+          roadmap_id: string
+          usage_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          node_count?: number
+          roadmap_id?: string
+          usage_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roadmap_extensions_roadmap_id_fkey"
+            columns: ["roadmap_id"]
+            isOneToOne: false
+            referencedRelation: "roadmaps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "roadmap_extensions_usage_id_fkey"
+            columns: ["usage_id"]
+            isOneToOne: true
+            referencedRelation: "ai_usage"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "roadmap_extensions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roadmap_previews: {
+        Row: {
+          created_at: string
+          model: string
+          roadmap_id: string
+          titles: Json
+          usage_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          model: string
+          roadmap_id: string
+          titles: Json
+          usage_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          model?: string
+          roadmap_id?: string
+          titles?: Json
+          usage_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roadmap_previews_roadmap_id_fkey"
+            columns: ["roadmap_id"]
+            isOneToOne: true
+            referencedRelation: "roadmaps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "roadmap_previews_usage_id_fkey"
+            columns: ["usage_id"]
+            isOneToOne: true
+            referencedRelation: "ai_usage"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "roadmap_previews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       roadmaps: {
         Row: {
           created_at: string
@@ -365,6 +463,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      append_roadmap_nodes: {
+        Args: {
+          p_nodes: Json
+          p_per_roadmap: number
+          p_roadmap_id: string
+          p_usage_id: string
+        }
+        Returns: number
+      }
       apply_subscription_event: {
         Args: {
           p_billing_interval?: string
@@ -405,6 +512,13 @@ export type Database = {
         Args: { p_free_limit: number; p_kind: string; p_premium_limit: number }
         Returns: string
       }
+      reserve_extension: {
+        Args: { p_daily: number; p_per_roadmap: number; p_roadmap_id: string }
+        Returns: {
+          status: string
+          usage_id: string
+        }[]
+      }
       reserve_generation: { Args: { p_daily_limit: number }; Returns: boolean }
       reserve_material_search: {
         Args: {
@@ -417,11 +531,27 @@ export type Database = {
           usage_id: string
         }[]
       }
+      reserve_preview: {
+        Args: { p_daily: number; p_roadmap_id: string }
+        Returns: {
+          status: string
+          usage_id: string
+        }[]
+      }
       save_node_materials: {
         Args: {
           p_items: Json
           p_model: string
           p_node_id: string
+          p_usage_id: string
+        }
+        Returns: undefined
+      }
+      save_roadmap_preview: {
+        Args: {
+          p_model: string
+          p_roadmap_id: string
+          p_titles: Json
           p_usage_id: string
         }
         Returns: undefined

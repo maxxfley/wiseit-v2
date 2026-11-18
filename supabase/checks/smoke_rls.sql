@@ -1,6 +1,6 @@
 -- Smoke test: trigger de profiles, aislamiento RLS, cuota, RPC de creación, grafo + progreso (Paso 6)
 -- y planes (Paso 7a: Premium, cuotas por tipo, límite de rutas, bloqueo de progreso, past_due;
--- Paso 7b: eventos del webhook de Paddle; Paso 7c: búsqueda de material).
+-- Paso 7b: eventos del webhook de Paddle; Paso 7c: búsqueda de material; Paso 7d: Avanzar más).
 -- Todo ocurre dentro de una transacción que termina en ROLLBACK: no deja datos.
 -- Si algo falla, aborta con 'FALLO: ...'. Si todo pasa, devuelve 'OK'.
 
@@ -433,9 +433,81 @@ begin
     if st <> 'exhausted' then raise exception 'FALLO material: Premium sin cuota = %', st; end if;
     execute 'reset role';
   end;
+
+  -- 16. (Paso 7d) Avanzar más: solo Premium, tope por ruta, cuota diaria, reserva de un solo uso,
+  -- orden y aristas válidas; títulos fantasma una vez por ruta.
+  declare
+    xr uuid; base uuid; st text; u uuid; u2 uuid; used int; added int; br uuid;
+  begin
+    -- A es Premium (sección 15). Ruta de A con un nodo base.
+    perform set_config('request.jwt.claims', json_build_object('sub', user_a, 'role', 'authenticated')::text, true);
+    execute 'set local role authenticated';
+    insert into public.roadmaps (user_id, topic, title) values (user_a, 'Extensión', 'X') returning id into xr;
+    insert into public.nodes (roadmap_id, title, description, difficulty, order_index)
+    values (xr, 'base', 'd', 'Básico', 0) returning id into base;
+
+    select count(*) into used from public.ai_usage
+    where kind = 'extension' and created_at >= date_trunc('day', now() at time zone 'utc') at time zone 'utc';
+    select s.status, s.usage_id into st, u from public.reserve_extension(xr, used + 2, 1) s;
+    if st <> 'granted' then raise exception 'FALLO extensión: Premium con cuota = %', st; end if;
+
+    added := public.append_roadmap_nodes(u, xr,
+      jsonb_build_array(
+        jsonb_build_object('title', 'x1', 'description', 'd', 'requires_existing', jsonb_build_array(base)),
+        jsonb_build_object('title', 'x2', 'description', 'd', 'requires_new', jsonb_build_array(0))
+      ), 1);
+    if added <> 2 then raise exception 'FALLO extensión: agregó % nodos', added; end if;
+    select count(*) into n from public.nodes where roadmap_id = xr and difficulty = 'Avanzado' and order_index in (1, 2);
+    if n <> 2 then raise exception 'FALLO extensión: orden o nivel incorrecto'; end if;
+    select count(*) into n from public.node_edges where roadmap_id = xr;
+    if n <> 2 then raise exception 'FALLO extensión: % aristas (esperado 2)', n; end if;
+
+    -- La misma reserva no sirve dos veces; el tope por ruta (1) ya se alcanzó.
+    begin
+      perform public.append_roadmap_nodes(u, xr, jsonb_build_array(jsonb_build_object('title', 'y', 'description', 'd')), 5);
+      raise exception 'FALLO: una reserva de extensión se usó dos veces';
+    exception when insufficient_privilege then
+      raise notice 'ok: reserva de extensión de un solo uso';
+    end;
+    select s.status into st from public.reserve_extension(xr, used + 2, 1) s;
+    if st <> 'roadmap_max' then raise exception 'FALLO extensión: tope por ruta = %', st; end if;
+    select s.status, s.usage_id into st, u2 from public.reserve_extension(xr, used + 2, 5) s;
+    if st <> 'granted' then raise exception 'FALLO extensión: segunda con cuota = %', st; end if;
+    -- Prerrequisito "nuevo" que apunta hacia adelante (ciclo): rechazado y sin cambios.
+    begin
+      perform public.append_roadmap_nodes(u2, xr, jsonb_build_array(jsonb_build_object('title', 'z', 'description', 'd', 'requires_new', jsonb_build_array(0))), 5);
+      raise exception 'FALLO: aceptó un prerrequisito circular';
+    exception when invalid_parameter_value then
+      raise notice 'ok: prerrequisito circular rechazado';
+    end;
+    select s.status into st from public.reserve_extension(xr, used + 2, 5) s;
+    if st <> 'exhausted' then raise exception 'FALLO extensión: cuota diaria = %', st; end if;
+
+    -- B (gratis): no puede extender; tampoco usar la ruta de A.
+    perform set_config('request.jwt.claims', json_build_object('sub', user_b, 'role', 'authenticated')::text, true);
+    select s.status into st from public.reserve_extension(xr, 99, 99) s;
+    if st <> 'not_found' then raise exception 'FALLO extensión: B en ruta ajena = %', st; end if;
+    insert into public.roadmaps (user_id, topic, title) values (user_b, 'Fantasma', 'F') returning id into br;
+    select s.status into st from public.reserve_extension(br, 99, 99) s;
+    if st <> 'premium_required' then raise exception 'FALLO extensión: B gratis = %', st; end if;
+
+    -- Títulos fantasma: una vez por ruta.
+    select s.status, s.usage_id into st, u from public.reserve_preview(br, 99) s;
+    if st <> 'granted' then raise exception 'FALLO fantasma: primera = %', st; end if;
+    perform public.save_roadmap_preview(u, br, '["t1","t2","t3"]', 'm');
+    select s.status into st from public.reserve_preview(br, 99) s;
+    if st <> 'cached' then raise exception 'FALLO fantasma: segunda = %', st; end if;
+    begin
+      perform public.save_roadmap_preview(u, xr, '["hack"]', 'm');
+      raise exception 'FALLO: B guardó títulos en una ruta ajena';
+    exception when insufficient_privilege then
+      raise notice 'ok: save_roadmap_preview solo en rutas propias';
+    end;
+    execute 'reset role';
+  end;
 end;
 $$;
 
-select 'OK: trigger + RLS + cuota + RPC + grafo + progreso + planes + webhook + material verificados' as resultado;
+select 'OK: trigger + RLS + cuota + RPC + grafo + progreso + planes + webhook + material + extensiones verificados' as resultado;
 
 rollback;
