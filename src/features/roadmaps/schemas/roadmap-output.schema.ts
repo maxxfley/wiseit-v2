@@ -35,7 +35,7 @@ export function roadmapJsonSchema(): Record<string, unknown> {
   return Object.fromEntries(Object.entries(schema).filter(([key]) => key !== "$schema"));
 }
 
-const nodeSchema = z.object({
+export const nodeSchema = z.object({
   id: z.string().trim().min(1).max(20),
   title: z.string().trim().min(1).max(200),
   description: z.string().trim().min(1).max(1500),

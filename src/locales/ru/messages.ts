@@ -42,6 +42,12 @@ export const messages: Dictionary["messages"] = {
   materialsExhausted: "Вы использовали все поиски материалов на сегодня. Возвращайтесь завтра.",
   materialsFailed: "Сейчас не удалось найти материалы. Попробуйте позже.",
   materialsRateLimited: "Сервис поиска перегружен. Попробуйте через минуту.",
+  // Двигаться дальше
+  extendPremium: "«Двигаться дальше» — функция Wiseit Premium.",
+  extendRoadmapMax: "Этот маршрут уже продлён максимальное число раз.",
+  extendExhausted: "Вы использовали все продления «Двигаться дальше» на сегодня. Возвращайтесь завтра.",
+  extendFailed: "Сейчас не удалось продлить маршрут. Попробуйте позже.",
+  previewExhausted: "На сегодня лимит превью исчерпан. Возвращайтесь завтра.",
 };
 
 export const validation: Dictionary["validation"] = {

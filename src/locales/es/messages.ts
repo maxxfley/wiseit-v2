@@ -47,6 +47,12 @@ export const messages = {
   materialsExhausted: "Ya usaste tus búsquedas de material de hoy. Volvé mañana.",
   materialsFailed: "No pudimos buscar material ahora. Intentá de nuevo más tarde.",
   materialsRateLimited: "El buscador está saturado. Probá de nuevo en un minuto.",
+  // Avanzar más
+  extendPremium: "\"Avanzar más\" es una función de Wiseit Premium.",
+  extendRoadmapMax: "Esta ruta ya alcanzó el máximo de extensiones.",
+  extendExhausted: "Ya usaste tus \"Avanzar más\" de hoy. Volvé mañana.",
+  extendFailed: "No pudimos extender la ruta ahora. Intentá de nuevo más tarde.",
+  previewExhausted: "Llegaste al máximo de adelantos por hoy. Volvé mañana.",
 };
 
 /** Mensajes de validación de Zod: los esquemas usan estas claves como `message`. */

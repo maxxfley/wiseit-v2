@@ -5,6 +5,9 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/config/routes";
 import { RoadmapTimeline } from "@/features/roadmaps/components/roadmap-timeline";
+import { ExtendSection } from "@/features/extensions/components/extend-section";
+import { ExtensionsProvider } from "@/features/extensions/components/extensions-provider";
+import { getExtensionAccess } from "@/features/extensions/services/extensions-repo";
 import { MaterialsProvider } from "@/features/materials/components/materials-provider";
 import { getRoadmapMaterials } from "@/features/materials/services/materials-repo";
 import { getIsPremium } from "@/features/plans/services/plan";
@@ -33,7 +36,11 @@ async function RoadmapDetailView({ params }: { params: PageProps<"/[lang]/roadma
   const [roadmap, premium] = await Promise.all([getRoadmapDetail(id), getIsPremium()]);
   if (!roadmap) notFound();
   // Fuentes ya encontradas (recortadas por plan en el servidor) y cupo gratis de "Buscar material".
-  const materials = await getRoadmapMaterials(await createSupabaseServerClient(), roadmap.id, premium);
+  const supabase = await createSupabaseServerClient();
+  const [materials, extensions] = await Promise.all([
+    getRoadmapMaterials(supabase, roadmap.id, premium),
+    getExtensionAccess(supabase, roadmap.id, premium),
+  ]);
   const locale = await getLocale();
   const t = (await getDictionary()).roadmaps.detail;
 
@@ -48,13 +55,20 @@ async function RoadmapDetailView({ params }: { params: PageProps<"/[lang]/roadma
         </p>
       </header>
       {roadmap.hasGraph ? (
-        <RoadmapViews
-          roadmapId={roadmap.id}
-          theme={roadmap.theme}
-          nodes={roadmap.nodes}
-          canTrackProgress={premium}
-          list={timeline}
-        />
+        <ExtensionsProvider roadmapId={roadmap.id} initialAccess={extensions}>
+          <RoadmapViews
+            roadmapId={roadmap.id}
+            theme={roadmap.theme}
+            nodes={roadmap.nodes}
+            canTrackProgress={premium}
+            list={
+              <>
+                {timeline}
+                <ExtendSection />
+              </>
+            }
+          />
+        </ExtensionsProvider>
       ) : (
         <>
           <LegacyNotice text={t.legacy} />
