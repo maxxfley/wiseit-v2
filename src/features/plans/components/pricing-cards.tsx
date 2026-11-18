@@ -23,7 +23,7 @@ interface PricingCardsProps {
 /** Gratis vs Premium. La acción depende de quién mira: crear cuenta, pagar o gestionar. */
 export function PricingCards({ viewer, paddle }: PricingCardsProps) {
   const { t, locale, href } = useI18n();
-  const [interval, setBillingInterval] = useState<BillingInterval>("year");
+  const [interval, setBillingInterval] = useState<BillingInterval>("month");
   const money = new Intl.NumberFormat(locale, { style: "currency", currency: "USD" });
   const yearly = interval === "year";
 

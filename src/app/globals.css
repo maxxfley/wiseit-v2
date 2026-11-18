@@ -85,6 +85,11 @@
    * el mapa. El reposo replica `bg-primary/15 text-accent` para que no haya salto al empezar o cortar.
    */
   --animate-firefly: firefly 2.6s ease-in-out infinite;
+  /*
+   * Luciérnaga LEVE (badge "Ahorrás 25%" de los planes): mismo reposo que `firefly`, pero el pico
+   * solo sube un poco el fondo y suma un halo tenue. Más lenta, para que acompañe sin distraer.
+   */
+  --animate-firefly-soft: firefly-soft 3.6s ease-in-out infinite;
   /* Nodos encendidos de la red neuronal de la landing ("Cómo funciona"). */
   --animate-twinkle: twinkle 2.6s ease-in-out infinite;
 
@@ -110,6 +115,18 @@
       background-color: var(--primary);
       color: var(--primary-foreground);
       box-shadow: var(--shadow-glow);
+    }
+  }
+
+  @keyframes firefly-soft {
+    0%,
+    100% {
+      background-color: color-mix(in oklab, var(--primary) 15%, transparent);
+      box-shadow: 0 0 0 #0000;
+    }
+    50% {
+      background-color: color-mix(in oklab, var(--primary) 28%, transparent);
+      box-shadow: 0 0 10px color-mix(in oklab, var(--primary) 35%, transparent);
     }
   }
 
