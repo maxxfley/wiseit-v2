@@ -55,9 +55,4 @@ export const landing: Dictionary["landing"] = {
       description: "List your paths, open the details as a timeline and delete the ones you no longer need.",
     },
   },
-  finalCta: {
-    title: "Start your first path today",
-    body: "Creating an account is free and takes less than a minute.",
-    cta: "Sign up",
-  },
 };
