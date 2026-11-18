@@ -9,7 +9,7 @@ import { PricingSection } from "@/features/plans/components/pricing-section";
  */
 export function LandingPricing() {
   return (
-    <section data-snap-section className="mx-auto w-full max-w-page space-y-12 px-4 pb-section sm:px-6">
+    <section data-snap-section className="mx-auto w-full max-w-page space-y-6 px-4 pb-section sm:px-6">
       <PricingHeader as="h2" />
       <Suspense fallback={<Skeleton className="mx-auto h-[520px] w-full max-w-4xl rounded-xl" />}>
         <PricingSection />
