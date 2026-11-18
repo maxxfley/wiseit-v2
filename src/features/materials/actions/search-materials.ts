@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { getCurrentUser } from "@/features/auth/services/session";
 import { getIsPremium } from "@/features/plans/services/plan";
-import { recordAiUsage } from "@/features/roadmaps/services/quota";
+import { settleAiUsage } from "@/features/roadmaps/services/quota";
 import type { AiFailure } from "@/lib/ai/errors";
 import { getModelForPlan } from "@/lib/ai/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -32,8 +32,8 @@ const fail = (message: MessageKey): SearchMaterialsResult => ({ status: "error",
 
 /**
  * "Buscar material" de un tema. Orden: sesión → validación → reserva atómica en la base (que
- * verifica dueño, caché y cupo) → búsqueda → tokens → caché. La reserva se consume aunque la
- * búsqueda falle (misma regla que generar rutas: nadie gasta llamadas provocando errores).
+ * verifica dueño, caché y cupo) → búsqueda → tokens → caché. Si la IA falla después de trabajar,
+ * el intento se consume; si rechazó el pedido sin procesarlo, se devuelve (`settleAiUsage`).
  */
 export async function searchMaterialsAction(input: { nodeId: string }): Promise<SearchMaterialsResult> {
   const user = await getCurrentUser();
@@ -68,7 +68,7 @@ export async function searchMaterialsAction(input: { nodeId: string }): Promise<
   const model = getModelForPlan(premium);
   console.info("[materials/search] Buscando material", { model, language: topic.language });
   const result = await findMaterials(topic, model);
-  await recordAiUsage(supabase, usageId, model, result.usage);
+  await settleAiUsage(supabase, usageId, model, result); // devuelve el cupo si la IA lo rechazó sin procesarlo
   if (!result.ok) return fail(FAILURE_MESSAGES[result.reason]);
 
   await saveNodeMaterials(supabase, usageId, nodeId, result.items, model);

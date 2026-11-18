@@ -231,5 +231,27 @@ from (values
   ('public.append_roadmap_nodes(uuid, uuid, jsonb, integer)'),
   ('public.reserve_preview(uuid, integer)'),
   ('public.save_roadmap_preview(uuid, uuid, jsonb, text)')
-) as f(sig);
+) as f(sig)
+
+-- ─── Paso 7d · Devolución de cupo ─────────────────────────────────────────────
+union all
+select 'Función SECURITY DEFINER con search_path fijo: release_ai_usage',
+       exists (
+         select 1 from pg_proc p
+         join pg_namespace n on n.oid = p.pronamespace
+         where n.nspname = 'public' and p.proname = 'release_ai_usage'
+           and p.prosecdef and p.proconfig @> array['search_path=""']
+       )
+
+union all
+select 'Solo authenticated ejecuta public.release_ai_usage(uuid)',
+       has_function_privilege('authenticated', 'public.release_ai_usage(uuid)', 'execute')
+       and not has_function_privilege('anon', 'public.release_ai_usage(uuid)', 'execute')
+
+union all
+select 'free_material_grants.usage_id existe (devolver el link gratis)',
+       exists (
+         select 1 from information_schema.columns
+         where table_schema = 'public' and table_name = 'free_material_grants' and column_name = 'usage_id'
+       );
 

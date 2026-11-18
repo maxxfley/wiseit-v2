@@ -57,21 +57,31 @@ export type Database = {
           created_at: string
           node_id: string
           roadmap_id: string
+          usage_id: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
           node_id: string
           roadmap_id: string
+          usage_id?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           node_id?: string
           roadmap_id?: string
+          usage_id?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "free_material_grants_usage_id_fkey"
+            columns: ["usage_id"]
+            isOneToOne: true
+            referencedRelation: "ai_usage"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "free_material_grants_user_id_fkey"
             columns: ["user_id"]
@@ -508,6 +518,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      release_ai_usage: { Args: { p_usage_id: string }; Returns: boolean }
       reserve_ai_usage: {
         Args: { p_free_limit: number; p_kind: string; p_premium_limit: number }
         Returns: string
