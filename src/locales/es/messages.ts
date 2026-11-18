@@ -43,6 +43,10 @@ export const messages = {
   alreadyPremium: "Ya tenés Premium activo.",
   portalFailed: "No pudimos abrir la gestión de tu suscripción. Intentá de nuevo.",
   resumeFailed: "No pudimos reactivar tu suscripción. Probá desde \"Gestionar suscripción\".",
+  // Buscar material
+  materialsExhausted: "Ya usaste tus búsquedas de material de hoy. Volvé mañana.",
+  materialsFailed: "No pudimos buscar material ahora. Intentá de nuevo más tarde.",
+  materialsRateLimited: "El buscador está saturado. Probá de nuevo en un minuto.",
 };
 
 /** Mensajes de validación de Zod: los esquemas usan estas claves como `message`. */

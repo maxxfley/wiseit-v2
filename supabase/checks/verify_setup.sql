@@ -163,4 +163,37 @@ select 'ai_usage.kind con check de valores',
        exists (
          select 1 from pg_constraint c
          where c.conrelid = 'public.ai_usage'::regclass and c.conname = 'ai_usage_kind_check'
-       );
+       )
+
+-- ─── Paso 7c · Buscar material ────────────────────────────────────────────────
+union all
+select 'RLS activo en ' || t.tname,
+       coalesce((select c.relrowsecurity from pg_class c where c.oid = ('public.' || t.tname)::regclass), false)
+from (values ('node_materials'), ('free_material_grants')) as t(tname)
+
+union all
+select t.tname || ': authenticated solo lee (sin insert/update/delete)',
+       has_table_privilege('authenticated', 'public.' || t.tname, 'select')
+       and not has_table_privilege('authenticated', 'public.' || t.tname, 'insert')
+       and not has_table_privilege('authenticated', 'public.' || t.tname, 'update')
+       and not has_table_privilege('authenticated', 'public.' || t.tname, 'delete')
+from (values ('node_materials'), ('free_material_grants')) as t(tname)
+
+union all
+select 'Función SECURITY DEFINER con search_path fijo: ' || f.fname,
+       exists (
+         select 1 from pg_proc p
+         join pg_namespace n on n.oid = p.pronamespace
+         where n.nspname = 'public' and p.proname = f.fname
+           and p.prosecdef and p.proconfig @> array['search_path=""']
+       )
+from (values ('reserve_material_search'), ('save_node_materials')) as f(fname)
+
+union all
+select 'Solo authenticated ejecuta ' || f.sig,
+       has_function_privilege('authenticated', f.sig, 'execute')
+       and not has_function_privilege('anon', f.sig, 'execute')
+from (values
+  ('public.reserve_material_search(uuid, integer, integer)'),
+  ('public.save_node_materials(uuid, uuid, jsonb, text)')
+) as f(sig);

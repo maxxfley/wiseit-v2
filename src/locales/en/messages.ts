@@ -38,6 +38,10 @@ export const messages: Dictionary["messages"] = {
   alreadyPremium: "You already have an active Premium plan.",
   portalFailed: "We couldn't open your subscription settings. Please try again.",
   resumeFailed: "We couldn't reactivate your subscription. Try from \"Manage subscription\".",
+  // Find material
+  materialsExhausted: "You've used today's material searches. Come back tomorrow.",
+  materialsFailed: "We couldn't search for material right now. Try again later.",
+  materialsRateLimited: "The search service is busy. Try again in a minute.",
 };
 
 export const validation: Dictionary["validation"] = {

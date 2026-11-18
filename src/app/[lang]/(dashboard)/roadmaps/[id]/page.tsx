@@ -5,12 +5,15 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/config/routes";
 import { RoadmapTimeline } from "@/features/roadmaps/components/roadmap-timeline";
+import { MaterialsProvider } from "@/features/materials/components/materials-provider";
+import { getRoadmapMaterials } from "@/features/materials/services/materials-repo";
 import { getIsPremium } from "@/features/plans/services/plan";
 import { RoadmapViews } from "@/features/roadmaps/components/roadmap-views";
 import { getRoadmapDetail } from "@/features/roadmaps/services/roadmap-detail";
 import { format, plural } from "@/lib/i18n/format";
 import { localizePath } from "@/lib/i18n/paths";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatDate } from "@/utils/format-date";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,12 +32,14 @@ async function RoadmapDetailView({ params }: { params: PageProps<"/[lang]/roadma
   const { id } = await params;
   const [roadmap, premium] = await Promise.all([getRoadmapDetail(id), getIsPremium()]);
   if (!roadmap) notFound();
+  // Fuentes ya encontradas (recortadas por plan en el servidor) y cupo gratis de "Buscar material".
+  const materials = await getRoadmapMaterials(await createSupabaseServerClient(), roadmap.id, premium);
   const locale = await getLocale();
   const t = (await getDictionary()).roadmaps.detail;
 
   const timeline = <RoadmapTimeline nodes={roadmap.nodes} />;
   return (
-    <>
+    <MaterialsProvider initialItems={materials.byNode} initialAccess={materials.access}>
       <header className="space-y-3">
         <p className="font-mono text-xs font-medium uppercase tracking-[0.6px] text-accent">{roadmap.topic}</p>
         <h1 className="font-display text-4xl font-medium tracking-[-0.8px] text-foreground">{roadmap.title}</h1>
@@ -56,7 +61,7 @@ async function RoadmapDetailView({ params }: { params: PageProps<"/[lang]/roadma
           <div className="max-w-3xl">{timeline}</div>
         </>
       )}
-    </>
+    </MaterialsProvider>
   );
 }
 

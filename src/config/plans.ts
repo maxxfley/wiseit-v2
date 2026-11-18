@@ -9,6 +9,8 @@ export const PLAN_LIMITS = {
     dailyGenerations: 4,
     /** Rutas guardadas a la vez (trigger `roadmaps_enforce_limit`). */
     maxSavedRoadmaps: 4,
+    /** "Buscar material": 1 link por ruta, hasta este total por cuenta, para siempre (7c). */
+    materialLinksPerAccount: 4,
   },
   premium: {
     dailyGenerations: 10,
