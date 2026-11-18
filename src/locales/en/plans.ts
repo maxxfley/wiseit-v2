@@ -19,6 +19,7 @@ export const plans: Dictionary["plans"] = {
       "Up to 4 saved paths",
       "Interactive map and list view",
       "Progress on the first topic of each path",
+      "1 material link per path",
     ],
   },
   premium: {
@@ -29,7 +30,8 @@ export const plans: Dictionary["plans"] = {
       "10 generated paths per day, with a more powerful AI model",
       "Unlimited saved paths",
       "Progress on every topic: check off, complete and unlock",
-      "Coming soon: \"Find material\" and \"Go further\"",
+      "Find material: up to 5 sources per topic",
+      "Go further: extend a path once you finish it",
     ],
   },
   cta: {

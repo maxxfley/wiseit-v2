@@ -1,30 +1,38 @@
-import { Layers, LayoutDashboard, ShieldCheck, Sparkles, type LucideIcon } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Compass, FolderKanban, ListChecks, Sparkles, type LucideIcon } from "lucide-react";
 import { getDictionary } from "@/lib/i18n/server";
 import type { Dictionary } from "@/locales/types";
-import { cn } from "@/utils/cn";
+import { FeatureCard } from "./feature-card";
 
-type FeatureKey = keyof Dictionary["landing"]["features"];
+type FeatureKey = keyof Dictionary["landing"]["features"]["items"];
 
 // Rejilla asimétrica (2+1 / 1+2): evita tres columnas iguales. El texto sale del diccionario.
 const FEATURES: readonly { key: FeatureKey; icon: LucideIcon; wide?: boolean }[] = [
-  { key: "levels", icon: Layers, wide: true },
-  { key: "strict", icon: Sparkles },
-  { key: "privacy", icon: ShieldCheck },
-  { key: "panel", icon: LayoutDashboard, wide: true },
+  { key: "routes", icon: Sparkles, wide: true },
+  { key: "progress", icon: ListChecks },
+  { key: "material", icon: Compass },
+  { key: "saved", icon: FolderKanban, wide: true },
 ];
 
+/** Qué incluye cada plan: cada card muestra Gratis y, con hover/foco/toque, lo que suma Premium. */
 export async function Features() {
   const t = (await getDictionary()).landing.features;
   return (
     <section data-snap-section className="mx-auto w-full max-w-page px-6 py-section">
+      <p className="mb-6 text-center font-mono text-xs text-subtle">
+        <span className="pointer-coarse:hidden">{t.hint.pointer}</span>
+        <span className="hidden pointer-coarse:inline">{t.hint.touch}</span>
+      </p>
       <div className="grid gap-4 md:grid-cols-3">
         {FEATURES.map(({ key, icon: Icon, wide }) => (
-          <Card key={key} className={cn("p-8", wide && "md:col-span-2")}>
-            <Icon aria-hidden="true" className="size-6 text-accent" />
-            <h3 className="mt-6 text-xl font-semibold text-foreground">{t[key].title}</h3>
-            <p className="mt-2 max-w-[60ch] text-muted-foreground">{t[key].description}</p>
-          </Card>
+          <FeatureCard
+            key={key}
+            icon={<Icon aria-hidden="true" className="size-6" />}
+            title={t.items[key].title}
+            free={t.items[key].free}
+            premium={t.items[key].premium}
+            badges={t.badges}
+            wide={wide}
+          />
         ))}
       </div>
     </section>

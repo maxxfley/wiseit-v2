@@ -37,22 +37,32 @@ export const landing: Dictionary["landing"] = {
     ],
   },
   features: {
-    levels: {
-      title: "Difficulty levels",
-      description:
-        "Every path moves from the essentials to expert level, so you don't skip the foundations or get stuck on the basics.",
+    hint: {
+      pointer: "Hover over a card to see what Premium adds.",
+      touch: "Tap a card to see what Premium adds.",
     },
-    strict: {
-      title: "AI with a strict format",
-      description: "Responses are validated against a schema before being saved.",
-    },
-    privacy: {
-      title: "Your data, only yours",
-      description: "Every path is private: the database enforces per-user access.",
-    },
-    panel: {
-      title: "A simple dashboard",
-      description: "List your paths, open the details as a timeline and delete the ones you no longer need.",
+    badges: { free: "Free", premium: "Premium" },
+    items: {
+      routes: {
+        title: "AI learning paths",
+        free: "4 paths per day, from the essentials to expert level, validated before being saved.",
+        premium: "10 paths per day with a more powerful AI model, going deeper into every topic.",
+      },
+      progress: {
+        title: "Your progress",
+        free: "Check off the concepts of the first topic of each path.",
+        premium: "Progress on every topic: check off, complete and unlock the next one.",
+      },
+      material: {
+        title: "Find material",
+        free: "1 recommended link per path, found with web search.",
+        premium: "Up to 5 sources per topic: articles, videos, documentation and forums.",
+      },
+      saved: {
+        title: "Your paths",
+        free: "Up to 4 saved paths, as an interactive map or a list.",
+        premium: "Unlimited saved paths and \"Go further\" to extend a path once you finish it.",
+      },
     },
   },
 };
