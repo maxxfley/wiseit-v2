@@ -52,6 +52,35 @@ export type Database = {
           },
         ]
       }
+      free_material_grants: {
+        Row: {
+          created_at: string
+          node_id: string
+          roadmap_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          node_id: string
+          roadmap_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          node_id?: string
+          roadmap_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "free_material_grants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       node_edges: {
         Row: {
           created_at: string
@@ -85,6 +114,65 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "nodes"
             referencedColumns: ["roadmap_id", "id"]
+          },
+        ]
+      }
+      node_materials: {
+        Row: {
+          created_at: string
+          items: Json
+          model: string
+          node_id: string
+          roadmap_id: string
+          usage_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          items: Json
+          model: string
+          node_id: string
+          roadmap_id: string
+          usage_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          items?: Json
+          model?: string
+          node_id?: string
+          roadmap_id?: string
+          usage_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "node_materials_node_id_fkey"
+            columns: ["node_id"]
+            isOneToOne: true
+            referencedRelation: "nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "node_materials_roadmap_id_fkey"
+            columns: ["roadmap_id"]
+            isOneToOne: false
+            referencedRelation: "roadmaps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "node_materials_usage_id_fkey"
+            columns: ["usage_id"]
+            isOneToOne: true
+            referencedRelation: "ai_usage"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "node_materials_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -318,6 +406,26 @@ export type Database = {
         Returns: string
       }
       reserve_generation: { Args: { p_daily_limit: number }; Returns: boolean }
+      reserve_material_search: {
+        Args: {
+          p_free_total: number
+          p_node_id: string
+          p_premium_daily: number
+        }
+        Returns: {
+          status: string
+          usage_id: string
+        }[]
+      }
+      save_node_materials: {
+        Args: {
+          p_items: Json
+          p_model: string
+          p_node_id: string
+          p_usage_id: string
+        }
+        Returns: undefined
+      }
       update_node_progress: {
         Args: {
           p_completed_concepts: number[]

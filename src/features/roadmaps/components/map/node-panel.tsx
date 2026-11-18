@@ -1,6 +1,7 @@
 "use client"; // Panel interactivo del nodo seleccionado.
 
 import { X } from "lucide-react";
+import { NodeMaterials } from "@/features/materials/components/node-materials";
 import { format } from "@/lib/i18n/format";
 import { useI18n } from "@/lib/i18n/provider";
 import { deriveStatus, nodePercent, type RoadmapNodeView } from "../../utils/node-status";
@@ -114,6 +115,11 @@ export function NodePanel({ node, byId, pending, canTrackProgress, error, onUpda
           <p className="rounded-md border border-border bg-background/40 p-3 text-sm text-body">{node.practice}</p>
         </section>
       ) : null}
+
+      <section className="mt-5">
+        <h3 className={SECTION_TITLE}>{dict.materials.heading}</h3>
+        <NodeMaterials key={node.id} nodeId={node.id} title={node.title} />
+      </section>
 
       {error ? (
         <p role="alert" className="mt-4 text-sm text-danger">
