@@ -35,22 +35,32 @@ export const landing = {
     ],
   },
   features: {
-    levels: {
-      title: "Niveles de dificultad",
-      description:
-        "Cada ruta avanza de lo esencial a lo experto, así no te saltás los cimientos ni te estancás en lo básico.",
+    hint: {
+      pointer: "Pasá el cursor por una card para ver qué suma Premium.",
+      touch: "Tocá una card para ver qué suma Premium.",
     },
-    strict: {
-      title: "IA con formato estricto",
-      description: "Las respuestas se validan contra un esquema antes de guardarse.",
-    },
-    privacy: {
-      title: "Tus datos, solo tuyos",
-      description: "Cada ruta es privada: la base de datos aplica acceso por usuario.",
-    },
-    panel: {
-      title: "Un panel simple",
-      description: "Listá tus rutas, abrí el detalle como una línea de tiempo y eliminá las que ya no necesites.",
+    badges: { free: "Gratis", premium: "Premium" },
+    items: {
+      routes: {
+        title: "Rutas con IA",
+        free: "4 rutas por día, de lo esencial a lo experto, validadas antes de guardarse.",
+        premium: "10 rutas por día con un modelo de IA más potente, con más profundidad en cada tema.",
+      },
+      progress: {
+        title: "Tu progreso",
+        free: "Tildá los conceptos del primer tema de cada ruta.",
+        premium: "Progreso en todos los temas: tildá, completá y desbloqueá el siguiente.",
+      },
+      material: {
+        title: "Buscar material",
+        free: "1 link recomendado por ruta, encontrado con búsqueda web.",
+        premium: "Hasta 5 fuentes por tema: artículos, videos, documentación y foros.",
+      },
+      saved: {
+        title: "Tus rutas",
+        free: "Hasta 4 rutas guardadas, en mapa interactivo o en lista.",
+        premium: "Rutas guardadas sin límite y \"Avanzar más\" para extender una ruta cuando la terminás.",
+      },
     },
   },
 };

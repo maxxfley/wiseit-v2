@@ -18,6 +18,7 @@ export const plans = {
       "Hasta 4 rutas guardadas",
       "Mapa interactivo y vista de lista",
       "Progreso en el primer tema de cada ruta",
+      "1 link de material por ruta",
     ],
   },
   premium: {
@@ -28,7 +29,8 @@ export const plans = {
       "10 rutas generadas por día, con un modelo de IA más potente",
       "Rutas guardadas sin límite",
       "Progreso en todos los temas: tildá, completá y desbloqueá",
-      "Próximamente: \"Buscar material\" y \"Avanzar más\"",
+      "Buscar material: hasta 5 fuentes por tema",
+      "Avanzar más: extendé una ruta cuando la terminás",
     ],
   },
   cta: {
