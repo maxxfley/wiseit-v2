@@ -42,6 +42,12 @@ export const messages: Dictionary["messages"] = {
   materialsExhausted: "You've used today's material searches. Come back tomorrow.",
   materialsFailed: "We couldn't search for material right now. Try again later.",
   materialsRateLimited: "The search service is busy. Try again in a minute.",
+  // Go further
+  extendPremium: "\"Go further\" is a Wiseit Premium feature.",
+  extendRoadmapMax: "This path has reached the maximum number of extensions.",
+  extendExhausted: "You've used today's \"Go further\" extensions. Come back tomorrow.",
+  extendFailed: "We couldn't extend the path right now. Try again later.",
+  previewExhausted: "You've reached today's limit of previews. Come back tomorrow.",
 };
 
 export const validation: Dictionary["validation"] = {

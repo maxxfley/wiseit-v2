@@ -4,6 +4,9 @@ import "@xyflow/react/dist/style.css";
 import { Background, BackgroundVariant, Controls, ReactFlow, type NodeTypes } from "@xyflow/react";
 import { useCallback, useMemo, useState } from "react";
 import type { RoadmapTheme } from "@/config/roadmap-visuals";
+import { buildExtensionFlow, routeEnds } from "@/features/extensions/components/extension-flow";
+import { ExtendNodeCard, GhostNodeCard } from "@/features/extensions/components/extension-flow-nodes";
+import { useExtensions } from "@/features/extensions/components/extensions-provider";
 import { useI18n } from "@/lib/i18n/provider";
 import { deriveStatus, type NodeStatus, type RoadmapNodeView } from "../../utils/node-status";
 import { buildFlowEdges, buildFlowNodes } from "./map-flow";
@@ -14,7 +17,7 @@ import { NodePanel } from "./node-panel";
 import { useNodeProgress } from "./use-node-progress";
 
 // Fuera del componente: React Flow exige una referencia estable.
-const NODE_TYPES: NodeTypes = { concept: MapNodeCard };
+const NODE_TYPES: NodeTypes = { concept: MapNodeCard, ghost: GhostNodeCard, extend: ExtendNodeCard };
 
 interface RoadmapMapProps {
   roadmapId: string;
@@ -43,7 +46,14 @@ export function RoadmapMap({ roadmapId, theme, nodes: serverNodes, canTrackProgr
     () => buildFlowNodes(nodes, byId, positions, selectedId, select),
     [nodes, byId, positions, selectedId, select],
   );
-  const flowEdges = useMemo(() => buildFlowEdges(nodes, byId, selectedId), [nodes, byId, selectedId]);
+  // "Avanzar más": botón (y temas fantasma del plan gratis) debajo del último tema.
+  const { ghosts } = useExtensions();
+  const extension = useMemo(() => buildExtensionFlow(positions, routeEnds(serverNodes), ghosts), [positions, serverNodes, ghosts]);
+  const allNodes = useMemo(() => [...flowNodes, ...extension.nodes], [flowNodes, extension.nodes]);
+  const flowEdges = useMemo(
+    () => [...buildFlowEdges(nodes, byId, selectedId), ...extension.edges],
+    [nodes, byId, selectedId, extension.edges],
+  );
 
   const counts = useMemo(() => {
     const result: Record<NodeStatus, number> = { completed: 0, in_progress: 0, available: 0, locked: 0 };
@@ -61,7 +71,7 @@ export function RoadmapMap({ roadmapId, theme, nodes: serverNodes, canTrackProgr
       className="roadmap-map relative h-[75vh] min-h-[520px] overflow-hidden rounded-2xl border border-border"
     >
       <ReactFlow
-        nodes={flowNodes}
+        nodes={allNodes}
         edges={flowEdges}
         nodeTypes={NODE_TYPES}
         colorMode="dark"
@@ -76,7 +86,7 @@ export function RoadmapMap({ roadmapId, theme, nodes: serverNodes, canTrackProgr
         elementsSelectable={false}
         // Imprescindible: sin onNodeClick (y con nodos no seleccionables ni arrastrables) React Flow
         // les pone pointer-events: none y el clic cae en el lienzo, que cierra el panel.
-        onNodeClick={(_, node) => select(node.id)}
+        onNodeClick={(_, node) => node.type === "concept" && select(node.id)}
         onPaneClick={() => select(null)}
       >
         <Background variant={BackgroundVariant.Dots} gap={28} size={1} color="var(--border-strong)" />

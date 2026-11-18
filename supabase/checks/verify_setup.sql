@@ -196,4 +196,40 @@ select 'Solo authenticated ejecuta ' || f.sig,
 from (values
   ('public.reserve_material_search(uuid, integer, integer)'),
   ('public.save_node_materials(uuid, uuid, jsonb, text)')
+) as f(sig)
+
+-- ─── Paso 7d · Avanzar más ────────────────────────────────────────────────────
+union all
+select 'RLS activo en ' || t.tname,
+       coalesce((select c.relrowsecurity from pg_class c where c.oid = ('public.' || t.tname)::regclass), false)
+from (values ('roadmap_extensions'), ('roadmap_previews')) as t(tname)
+
+union all
+select t.tname || ': authenticated solo lee (sin insert/update/delete)',
+       has_table_privilege('authenticated', 'public.' || t.tname, 'select')
+       and not has_table_privilege('authenticated', 'public.' || t.tname, 'insert')
+       and not has_table_privilege('authenticated', 'public.' || t.tname, 'update')
+       and not has_table_privilege('authenticated', 'public.' || t.tname, 'delete')
+from (values ('roadmap_extensions'), ('roadmap_previews')) as t(tname)
+
+union all
+select 'Función SECURITY DEFINER con search_path fijo: ' || f.fname,
+       exists (
+         select 1 from pg_proc p
+         join pg_namespace n on n.oid = p.pronamespace
+         where n.nspname = 'public' and p.proname = f.fname
+           and p.prosecdef and p.proconfig @> array['search_path=""']
+       )
+from (values ('reserve_extension'), ('append_roadmap_nodes'), ('reserve_preview'), ('save_roadmap_preview')) as f(fname)
+
+union all
+select 'Solo authenticated ejecuta ' || f.sig,
+       has_function_privilege('authenticated', f.sig, 'execute')
+       and not has_function_privilege('anon', f.sig, 'execute')
+from (values
+  ('public.reserve_extension(uuid, integer, integer)'),
+  ('public.append_roadmap_nodes(uuid, uuid, jsonb, integer)'),
+  ('public.reserve_preview(uuid, integer)'),
+  ('public.save_roadmap_preview(uuid, uuid, jsonb, text)')
 ) as f(sig);
+
