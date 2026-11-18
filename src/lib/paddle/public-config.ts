@@ -9,8 +9,9 @@ export interface PaddlePublicConfig {
 }
 
 export function getPaddlePublicConfig(): PaddlePublicConfig | null {
-  const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
-  const environment = process.env.NEXT_PUBLIC_PADDLE_ENV;
+  // trim(): mismo motivo que en env.ts (saltos de línea colados al pegar en Vercel).
+  const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN?.trim();
+  const environment = process.env.NEXT_PUBLIC_PADDLE_ENV?.trim();
   if (!token || (environment !== "sandbox" && environment !== "production")) return null;
   return { token, environment };
 }

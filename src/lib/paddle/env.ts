@@ -1,12 +1,14 @@
 import "server-only";
 import { z } from "zod";
 
+// `.trim()`: al pegar en el panel de Vercel suele colarse un salto de línea final. En el secreto del
+// webhook eso cambia el HMAC y TODA firma da inválida (pasó en producción), así que se recorta.
 const paddleEnvSchema = z.object({
-  PADDLE_API_KEY: z.string().min(20),
-  PADDLE_WEBHOOK_SECRET: z.string().min(10),
-  PADDLE_PRICE_MONTHLY: z.string().startsWith("pri_"),
-  PADDLE_PRICE_YEARLY: z.string().startsWith("pri_"),
-  NEXT_PUBLIC_PADDLE_ENV: z.enum(["sandbox", "production"]),
+  PADDLE_API_KEY: z.string().trim().min(20),
+  PADDLE_WEBHOOK_SECRET: z.string().trim().min(10),
+  PADDLE_PRICE_MONTHLY: z.string().trim().startsWith("pri_"),
+  PADDLE_PRICE_YEARLY: z.string().trim().startsWith("pri_"),
+  NEXT_PUBLIC_PADDLE_ENV: z.string().trim().pipe(z.enum(["sandbox", "production"])),
 });
 
 export type PaddleEnv = z.infer<typeof paddleEnvSchema>;
