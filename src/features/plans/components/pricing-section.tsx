@@ -12,8 +12,9 @@ export async function PricingSection() {
   const paddle = getPaddlePublicConfig();
   const t = (await getDictionary()).plans.notes;
 
+  // Espaciado interno propio: así quien la usa solo decide la distancia con el encabezado.
   return (
-    <>
+    <div className="space-y-12">
       {viewer === "premium" ? <CancellationNotice /> : null}
       <PricingCards viewer={viewer} paddle={paddle} />
       <div className="mx-auto max-w-2xl space-y-2 text-center text-sm text-muted-foreground">
@@ -23,6 +24,6 @@ export async function PricingSection() {
           <p className="rounded-md border border-border bg-surface px-3 py-2 font-mono text-xs text-subtle">{t.sandbox}</p>
         ) : null}
       </div>
-    </>
+    </div>
   );
 }
