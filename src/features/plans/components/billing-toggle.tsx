@@ -36,7 +36,7 @@ export function BillingToggle({ value, onChange }: BillingToggleProps) {
           >
             {option.label}
             {option.value === "year" ? (
-              <span className={cn("rounded-sm px-1.5 py-0.5 text-xs", selected ? "bg-background/25" : "bg-primary/15 text-accent")}>
+              <span className={cn("rounded-sm px-1.5 py-0.5 text-xs", selected ? "bg-background/25" : "bg-primary/15 text-accent animate-firefly-soft motion-reduce:animate-none")}>
                 {t.plans.yearlySave}
               </span>
             ) : null}
