@@ -28,7 +28,7 @@ export const landing: Dictionary["landing"] = {
       {
         title: "Get your path",
         description:
-          "The AI organizes the concepts into three levels (Basic, Intermediate and Advanced) with a description of each step.",
+          "Wiseit organizes the concepts into three levels (Basic, Intermediate and Advanced) with a description of each step.",
       },
       {
         title: "Follow the journey",

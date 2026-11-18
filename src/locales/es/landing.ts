@@ -26,7 +26,7 @@ export const landing = {
       {
         title: "Recibí tu ruta",
         description:
-          "La IA ordena los conceptos en tres niveles (Básico, Intermedio y Avanzado) con una descripción de cada paso.",
+          "Wiseit ordena los conceptos en tres niveles (Básico, Intermedio y Avanzado) con una descripción de cada paso.",
       },
       {
         title: "Seguí el recorrido",
