@@ -1,6 +1,6 @@
 -- Smoke test: trigger de profiles, aislamiento RLS, cuota, RPC de creación, grafo + progreso (Paso 6)
 -- y planes (Paso 7a: Premium, cuotas por tipo, límite de rutas, bloqueo de progreso, past_due;
--- Paso 7b: eventos del webhook de Paddle; Paso 7c: búsqueda de material; Paso 7d: Avanzar más).
+-- Paso 7b: eventos del webhook de Paddle; Paso 7c: búsqueda de material; Paso 7d: Avanzar más y devolución de cupo).
 -- Todo ocurre dentro de una transacción que termina en ROLLBACK: no deja datos.
 -- Si algo falla, aborta con 'FALLO: ...'. Si todo pasa, devuelve 'OK'.
 
@@ -503,6 +503,40 @@ begin
     exception when insufficient_privilege then
       raise notice 'ok: save_roadmap_preview solo en rutas propias';
     end;
+    execute 'reset role';
+  end;
+
+  -- 17. (Paso 7d) release_ai_usage: devuelve una reserva propia SIN tokens (y el link gratis que
+  -- trajo); no sirve para reservas con tokens ni ajenas.
+  declare
+    fr uuid; fnode uuid; st text; u uuid; ok boolean;
+  begin
+    perform set_config('request.jwt.claims', json_build_object('sub', user_b, 'role', 'authenticated')::text, true);
+    execute 'set local role authenticated';
+    insert into public.roadmaps (user_id, topic, title) values (user_b, 'Devolución', 'D') returning id into fr;
+    insert into public.nodes (roadmap_id, title, description, difficulty, order_index)
+    values (fr, 'd1', 'd', 'Básico', 0) returning id into fnode;
+
+    -- La "IA rechazó" la búsqueda: se devuelve la reserva y el link gratis de la ruta.
+    select s.status, s.usage_id into st, u from public.reserve_material_search(fnode, 15, 4) s;
+    if st <> 'granted' then raise exception 'FALLO devolución: reserva inicial = %', st; end if;
+    ok := public.release_ai_usage(u);
+    if not ok then raise exception 'FALLO devolución: no devolvió una reserva sin tokens'; end if;
+    select count(*) into n from public.free_material_grants where roadmap_id = fr;
+    if n <> 0 then raise exception 'FALLO devolución: el link gratis no se devolvió'; end if;
+
+    -- Con tokens registrados (la IA trabajó) ya no se puede devolver.
+    select s.status, s.usage_id into st, u from public.reserve_material_search(fnode, 15, 4) s;
+    if st <> 'granted' then raise exception 'FALLO devolución: tras devolver no se pudo reservar (%)', st; end if;
+    perform public.record_ai_usage_tokens(u, 'm', 10, 5);
+    ok := public.release_ai_usage(u);
+    if ok then raise exception 'FALLO devolución: devolvió una reserva con tokens'; end if;
+
+    -- Una reserva ajena tampoco.
+    select s.status, s.usage_id into st, u from public.reserve_preview(fr, 99) s;
+    perform set_config('request.jwt.claims', json_build_object('sub', user_a, 'role', 'authenticated')::text, true);
+    ok := public.release_ai_usage(u);
+    if ok then raise exception 'FALLO devolución: A devolvió una reserva de B'; end if;
     execute 'reset role';
   end;
 end;
