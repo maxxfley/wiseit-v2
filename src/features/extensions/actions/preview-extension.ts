@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { getCurrentUser } from "@/features/auth/services/session";
-import { recordAiUsage } from "@/features/roadmaps/services/quota";
+import { settleAiUsage } from "@/features/roadmaps/services/quota";
 import { getModelForPlan } from "@/lib/ai/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { MessageKey } from "@/locales/types";
@@ -39,7 +39,7 @@ export async function previewExtensionAction(input: { roadmapId: string }): Prom
 
   const model = getModelForPlan(false);
   const result = await generatePreview(loaded.context, model);
-  await recordAiUsage(supabase, reserve.usageId, model, result.usage);
+  await settleAiUsage(supabase, reserve.usageId, model, result); // devuelve el cupo si la IA lo rechazó sin procesarlo
   if (!result.ok) return fail("extendFailed");
 
   await savePreview(supabase, reserve.usageId, roadmapId, result.titles, model);

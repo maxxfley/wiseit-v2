@@ -13,7 +13,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { generateInputSchema } from "../schemas/generate-input.schema";
 import { generateRoadmap, type GenerationFailure } from "../services/generate-roadmap";
 import { normalizeNodes } from "../services/normalize-nodes";
-import { hasReachedRoadmapLimit, recordAiUsage, reserveAiUsage } from "../services/quota";
+import { hasReachedRoadmapLimit, settleAiUsage, reserveAiUsage } from "../services/quota";
 import { saveRoadmap } from "../services/save-roadmap";
 import { clearTopicDraft } from "../services/topic-draft";
 import type { GenerateFormState } from "../types";
@@ -57,7 +57,7 @@ export async function generateRoadmapAction(
   const model = getModelForPlan(premium);
   console.info("[roadmaps/generate] Generando ruta", { locale, model });
   const result = await generateRoadmap(topic, locale, model);
-  await recordAiUsage(supabase, quota.usageId, model, result.usage);
+  await settleAiUsage(supabase, quota.usageId, model, result); // devuelve el cupo si la IA lo rechazó sin procesarlo
   if (!result.ok) return error(FAILURE_MESSAGES[result.reason]);
 
   const nodes = normalizeNodes(result.roadmap.nodes);
