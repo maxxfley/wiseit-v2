@@ -35,10 +35,6 @@ export const landing = {
     ],
   },
   features: {
-    hint: {
-      pointer: "Pasá el cursor por una card para ver qué suma Premium.",
-      touch: "Tocá una card para ver qué suma Premium.",
-    },
     badges: { free: "Gratis", premium: "Premium" },
     items: {
       routes: {

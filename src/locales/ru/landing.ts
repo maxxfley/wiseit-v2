@@ -37,10 +37,6 @@ export const landing: Dictionary["landing"] = {
     ],
   },
   features: {
-    hint: {
-      pointer: "Наведите курсор на карточку, чтобы увидеть, что добавляет Premium.",
-      touch: "Коснитесь карточки, чтобы увидеть, что добавляет Premium.",
-    },
     badges: { free: "Бесплатно", premium: "Premium" },
     items: {
       routes: {

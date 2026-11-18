@@ -1,7 +1,7 @@
-"use client"; // Alterna Gratis/Premium con hover, foco o toque: necesita estado en el navegador.
+"use client"; // Eventos de puntero y foco: solo existen en el navegador.
 
 import { Sparkles } from "lucide-react";
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { cn } from "@/utils/cn";
 
 interface FeatureCardProps {
@@ -11,28 +11,31 @@ interface FeatureCardProps {
   premium: string;
   badges: { free: string; premium: string };
   wide?: boolean;
+  /** Lo decide FeatureGrid (rotación automática o interacción). */
+  active: boolean;
+  /** true al entrar el cursor, enfocar o tocar; false al salir. */
+  onInteract: (engaged: boolean) => void;
 }
 
 const LAYER = "col-start-1 row-start-1 transition-opacity duration-300 motion-reduce:transition-none";
 
 /**
- * Card de Features: en reposo cuenta el plan gratis; con el cursor encima (o foco de teclado) pasa
- * a "modo Premium". En táctiles no hay hover: un toque alterna. Las dos versiones comparten celda
- * de grilla, así el alto no salta, y ambas quedan legibles para lectores de pantalla.
+ * Card de Features: en reposo cuenta el plan gratis; activa, pasa a "modo Premium". Avisa al grid
+ * de hover, foco y toque (en táctiles no hay hover: un toque alterna). Las dos versiones comparten
+ * celda de grilla, así el alto no salta, y ambas quedan legibles para lectores de pantalla.
  */
-export function FeatureCard({ icon, title, free, premium, badges, wide }: FeatureCardProps) {
-  const [active, setActive] = useState(false);
+export function FeatureCard({ icon, title, free, premium, badges, wide, active, onInteract }: FeatureCardProps) {
   const pointerType = useRef<string>("mouse");
 
   return (
     <div
       tabIndex={0}
       onPointerDown={(event) => (pointerType.current = event.pointerType)}
-      onPointerEnter={(event) => event.pointerType === "mouse" && setActive(true)}
-      onPointerLeave={(event) => event.pointerType === "mouse" && setActive(false)}
-      onClick={() => pointerType.current !== "mouse" && setActive((value) => !value)}
-      onFocus={() => setActive(true)}
-      onBlur={() => setActive(false)}
+      onPointerEnter={(event) => event.pointerType === "mouse" && onInteract(true)}
+      onPointerLeave={(event) => event.pointerType === "mouse" && onInteract(false)}
+      onClick={() => pointerType.current !== "mouse" && onInteract(!active)}
+      onFocus={() => onInteract(true)}
+      onBlur={() => onInteract(false)}
       className={cn(
         "relative cursor-default rounded-xl border bg-surface p-8 transition-[border-color,box-shadow,background-color] duration-300 motion-reduce:transition-none",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",

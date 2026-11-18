@@ -37,10 +37,6 @@ export const landing: Dictionary["landing"] = {
     ],
   },
   features: {
-    hint: {
-      pointer: "Hover over a card to see what Premium adds.",
-      touch: "Tap a card to see what Premium adds.",
-    },
     badges: { free: "Free", premium: "Premium" },
     items: {
       routes: {
